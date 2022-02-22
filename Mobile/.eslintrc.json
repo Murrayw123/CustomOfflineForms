@@ -1,0 +1,47 @@
+{
+    "parser": "@typescript-eslint/parser",
+    "plugins": ["@typescript-eslint"],
+    "extends": ["plugin:@typescript-eslint/recommended"],
+    "rules": {
+        "no-nested-ternary": "warn",
+        "max-lines-per-function": [
+            "warn",
+            {
+                "max": 60
+            }
+        ],
+        "class-methods-use-this": "warn",
+        "consistent-return": "warn",
+        "no-return-await": "warn",
+        "no-self-compare": "warn",
+        "no-await-in-loop": "warn",
+        "consistent-this": "warn",
+        "max-depth": [
+            "warn",
+            {
+                "max": 3
+            }
+        ],
+        "max-lines": [
+            "warn",
+            {
+                "max": 800
+            }
+        ],
+        "max-params": [
+            "warn",
+            {
+                "max": 4
+            }
+        ],
+        "no-duplicate-imports": "warn",
+        "@typescript-eslint/no-this-alias": [
+            "warn",
+            {
+                "allowedNames": ["ctrl"]
+            }
+        ],
+        "@typescript-eslint/no-var-requires": 0,
+        "@typescript-eslint/no-inferrable-types": 0
+    }
+}

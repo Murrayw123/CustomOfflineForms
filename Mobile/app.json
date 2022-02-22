@@ -1,0 +1,13 @@
+{
+    "expo": {
+        "name": "reactrealmtstemplateapp",
+        "slug": "reactrealmtstemplateapp",
+        "version": "1.0.0",
+        "entryPoint": "./index.tsx",
+        "sdkVersion": "44.0.0",
+        "platforms": ["ios", "android", "web"],
+        "android": {
+            "package": "com.dynamicforms"
+        }
+    }
+}
