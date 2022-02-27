@@ -1,11 +1,12 @@
 import React from 'react';
 import { Formik } from 'formik';
-import { MundaBiddiProblemValidationSchema } from 'models/MundaBiddiProblem';
-import { Button, Text, TextInput } from 'react-native-paper';
+import { TextInput } from 'react-native-paper';
 import { LocationWithButton } from 'components/Location';
 import { SelectableMenuItem } from 'components/ItemWithPopup';
 import { View } from 'react-native';
-import { CameraComponent } from 'components/CameraWithImage';
+import ImagePickerExample from 'components/ImagePicker';
+import { SaveButton } from 'components/SaveButton';
+import { MundaBiddiProblemValidationSchema } from 'configurations/MundaBiddi';
 
 const MundabiddiProblems = [
     { display: 'Trail Obstructed', value: 'trail_obstruction' },
@@ -38,7 +39,7 @@ export const MundabiddiProblemReport = () => {
             initialValues={formik.initialValues}
             validationSchema={formik.validationSchema}
         >
-            {({ handleChange, values }) => (
+            {({ handleChange, values, handleSubmit }) => (
                 <View>
                     <TextInput label="Organisation" value={values.org} disabled={true} />
                     <SelectableMenuItem
@@ -57,10 +58,8 @@ export const MundabiddiProblemReport = () => {
                         latitude={values.latitude}
                         longitude={values.longitude}
                     />
-                    <CameraComponent />
-                    <Button icon="camera" onPress={() => console.log('Pressed')}>
-                        <Text> Press me </Text>
-                    </Button>
+                    <ImagePickerExample />
+                    <SaveButton onSave={handleSubmit} />
                 </View>
             )}
         </Formik>

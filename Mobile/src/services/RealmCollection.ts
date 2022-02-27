@@ -27,4 +27,10 @@ export class RealmCollection {
             throw new Error('Realm not found');
         }
     }
+
+    public closeAllRealms(): void {
+        this._realmCollection.forEach(realm => {
+            realm.realm.close();
+        });
+    }
 }

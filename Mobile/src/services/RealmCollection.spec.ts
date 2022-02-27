@@ -2,7 +2,7 @@ import { RealmCollection } from 'services/RealmCollection';
 import { RealmFactory } from 'services/RealmFactory';
 import { Database } from 'services/Db';
 import { BSON, Credentials } from 'realm';
-import { MundaBiddiProblemSchema } from 'models/MundaBiddiProblem';
+import { MundaBiddiConfiguration } from 'configurations/MundaBiddi';
 
 const TESTS = 'tests';
 
@@ -16,7 +16,7 @@ describe('RealmCollection basic operations integration test', () => {
         await database.login();
         realmFactory = new RealmFactory(database);
         subject = new RealmCollection(realmFactory);
-        await subject.addRealm(TESTS, [MundaBiddiProblemSchema], true);
+        await subject.addRealm(TESTS, MundaBiddiConfiguration().schemas, true);
     });
 
     it('should create a new entry in a Realm collection and then delete ', async () => {

@@ -6,6 +6,7 @@
         "entryPoint": "./index.tsx",
         "sdkVersion": "44.0.0",
         "platforms": ["ios", "android", "web"],
+        "plugins": ["@react-native-mapbox-gl/maps"],
         "android": {
             "package": "com.dynamicforms"
         }

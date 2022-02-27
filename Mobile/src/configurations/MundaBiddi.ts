@@ -1,6 +1,16 @@
+import { MundabiddiProblemReport } from 'forms/ProblemReportingForm';
+import { Map } from 'components/Map';
 import * as Yup from 'yup';
+import { IConfiguration } from 'services/ConfigurationService';
 
-export const MundaBiddiProblemSchema = {
+const SceneMap = {
+    forms: MundabiddiProblemReport,
+    map: Map
+};
+
+const additionalRoutes = [{ key: 'map', title: 'map', icon: 'map' }];
+
+const MundaBiddiProblemSchema = {
     name: 'MundaBiddiProblem',
     properties: {
         _id: 'objectId?',
@@ -22,3 +32,12 @@ export const MundaBiddiProblemValidationSchema = Yup.object().shape({
     org: Yup.string().required('Org is required'),
     type: Yup.string().required('Type is required')
 });
+
+export const MundaBiddiConfiguration = (): IConfiguration => {
+    return {
+        sceneMap: SceneMap,
+        additionalRoutes: additionalRoutes,
+        partitionValue: 'mundabiddi',
+        schemas: [MundaBiddiProblemSchema]
+    };
+};

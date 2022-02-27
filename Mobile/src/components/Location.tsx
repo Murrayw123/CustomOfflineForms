@@ -36,7 +36,7 @@ export const LocationWithButton = (props: Props): JSX.Element => {
                 label="Longitude"
                 keyboardType="numeric"
                 onChangeText={props.onLongitudeChange}
-                value={String(props.latitude)}
+                value={String(props.longitude)}
                 maxLength={10}
             />
 
