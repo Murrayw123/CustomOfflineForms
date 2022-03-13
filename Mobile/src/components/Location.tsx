@@ -2,7 +2,7 @@ import { UserLocation } from 'controllers/UserLocation';
 import * as ExpoLocation from 'expo-location';
 import React, { useContext } from 'react';
 import { Button, TextInput, Text } from 'react-native-paper';
-import { ServicesContext } from 'Bootstrapper';
+import { ServicesContext } from 'services/Context';
 
 interface Props {
     onLatitudeChange: (latitude: string) => void;

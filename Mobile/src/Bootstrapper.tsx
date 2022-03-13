@@ -1,10 +1,9 @@
-import React, { createContext, useEffect } from 'react';
-import { AppBootstrapper, factory, Services } from 'services/AppBootstrapper';
+import React, { useEffect } from 'react';
+import { AppBootstrapper, factory } from 'services/AppBootstrapper';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { HeaderComponent } from 'components/Header';
 import { NavigationComponent } from 'components/BottomBar';
-
-export const ServicesContext = createContext({} as Services);
+import { ServicesContext } from 'services/Context';
 
 export const Bootstrapper = () => {
     const appBootstrapper = new AppBootstrapper(() => factory());

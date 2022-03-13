@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useContext } from 'react';
 import { BottomNavigation } from 'react-native-paper';
-import { ServicesContext } from 'Bootstrapper';
+import { ServicesContext } from 'services/Context';
 import { MundaBiddiSceneMap } from 'configurations/MundaBiddiUISchema';
 
 export const NavigationComponent = () => {

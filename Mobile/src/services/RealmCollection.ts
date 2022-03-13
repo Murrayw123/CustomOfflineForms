@@ -2,6 +2,10 @@ import { ObjectSchema } from 'realm';
 import { RealmFactory } from 'services/RealmFactory';
 import { ConfigurationService } from 'services/ConfigurationService';
 
+interface RealmAsJS {
+    [key: string]: Array<{ [key: string]: unknown }>;
+}
+
 export class RealmCollection {
     private _realmCollection: Array<{ partition: string; realm: Realm }>;
     private _realmFactory: RealmFactory;
@@ -29,7 +33,32 @@ export class RealmCollection {
         }
     }
 
+    public getRealmObjectsAsJS(): RealmAsJS {
+        const realmObjectsAsJS: RealmAsJS = {};
+
+        this._configurationService.configuration.schemas.forEach(schema => {
+            realmObjectsAsJS[schema.name] = this.getRealm()
+                .objects(schema.name)
+                .map(realmObject => realmObject.toJSON());
+        });
+
+        return realmObjectsAsJS;
+    }
+
+    public subscribeToRealmChanges(callback: (realmObjectsAsJS: RealmAsJS) => void): void {
+        this._configurationService.configuration.schemas.forEach(schema => {
+            this.getRealm()
+                .objects(schema.name)
+                .addListener(() => {
+                    callback(this.getRealmObjectsAsJS());
+                });
+        });
+    }
+
     public closeAllRealms(): void {
+        this._configurationService.configuration.schemas.forEach(schema => {
+            this.getRealm().objects(schema.name).removeAllListeners();
+        });
         this._realmCollection.forEach(realm => {
             realm.realm.close();
         });

@@ -1,4 +1,16 @@
 import { RealmCollection } from 'services/RealmCollection';
+import { MundaBiddiProblemSchema, MundaBiddiTrackInfoSchema } from 'configurations/MundaBiddi';
+
+export interface MapMarker {
+    _id: number;
+    latitude: number;
+    longitude: number;
+    [key: string]: any;
+}
+
+function convertStringToGeoJSON(str: string): string {
+    return JSON.parse(str);
+}
 
 export class MapService {
     private _realmCollection: RealmCollection;
@@ -7,9 +19,16 @@ export class MapService {
         this._realmCollection = realmCollection;
     }
 
-    public getMapFeatures(): { mapTrack: GeoJSON.FeatureCollection } {
-        const realm = this._realmCollection.getRealm();
-        const mapTrack = JSON.parse((realm.objects('MundaBiddiTrackInfo')[0] as any).data);
-        return { mapTrack };
+    public get mapTrack(): GeoJSON.FeatureCollection {
+        const mapTrack =
+            this._realmCollection.getRealmObjectsAsJS()[MundaBiddiTrackInfoSchema.name][0].data;
+        return JSON.parse(convertStringToGeoJSON(mapTrack as unknown as string));
+    }
+
+    public subscribeToMapMarkerChanges(callback: (markers: MapMarker[]) => void): void {
+        this._realmCollection.subscribeToRealmChanges(realmObjectsAsJS => {
+            const markers = realmObjectsAsJS[MundaBiddiProblemSchema.name];
+            callback(markers as MapMarker[]);
+        });
     }
 }

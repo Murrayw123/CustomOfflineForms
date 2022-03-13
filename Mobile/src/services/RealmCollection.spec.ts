@@ -26,6 +26,8 @@ export async function setupTestDatabase(): Promise<{
 describe('RealmCollection basic operations integration test', () => {
     let subject: RealmCollection;
     let database: Database;
+    let objId: BSON.ObjectId;
+    let realm: Realm;
 
     beforeAll(async () => {
         const { realmCollection: rc, database: db } = await setupTestDatabase();
@@ -33,13 +35,15 @@ describe('RealmCollection basic operations integration test', () => {
         database = db;
     });
 
-    it('should create a new entry in a Realm collection and then delete ', async () => {
-        const realm = subject.getRealm();
+    beforeAll(() => {
+        realm = subject.getRealm();
 
         let obj: Realm.Object;
+        objId = new BSON.ObjectId();
+
         realm.write(() => {
             obj = realm.create('MundaBiddiProblem', {
-                _id: new BSON.ObjectId(),
+                _id: objId,
                 description: 'Test',
                 image: 'Test',
                 latitude: 132,
@@ -49,11 +53,74 @@ describe('RealmCollection basic operations integration test', () => {
             });
             expect(obj).toBeDefined();
         });
+    });
 
-        realm.write(() => {
-            realm.delete(obj);
+    it('should convert a realm to JS', () => {
+        const realmAsJS = subject.getRealmObjectsAsJS();
+        expect(realmAsJS).toEqual({
+            MundaBiddiProblem: [
+                {
+                    _id: objId,
+                    description: 'Test',
+                    image: 'Test',
+                    latitude: 132,
+                    longitude: 142,
+                    org: 'tests',
+                    type: 'test'
+                }
+            ],
+            MundaBiddiTrackInfo: []
         });
     });
+
+    it('should subscribe to changes and get a response', async () => {
+        const callback = jest.fn();
+        const newObjId = new BSON.ObjectId();
+        let newObj: Realm.Object;
+
+        subject.subscribeToRealmChanges(callback);
+
+        callback.mockReset();
+
+        realm.write(() => {
+            newObj = realm.create('MundaBiddiProblem', {
+                _id: newObjId,
+                description: 'Test2',
+                image: 'Test2',
+                latitude: 1000,
+                longitude: 1000,
+                org: TESTS,
+                type: 'test'
+            });
+            expect(newObj).toBeDefined();
+        });
+
+        await new Promise(resolve => setTimeout(resolve, 5000));
+
+        expect(callback).toHaveBeenCalledWith({
+            MundaBiddiProblem: [
+                {
+                    _id: objId,
+                    description: 'Test',
+                    image: 'Test',
+                    latitude: 132,
+                    longitude: 142,
+                    org: 'tests',
+                    type: 'test'
+                },
+                {
+                    _id: newObjId,
+                    description: 'Test2',
+                    image: 'Test2',
+                    latitude: 1000,
+                    longitude: 1000,
+                    org: TESTS,
+                    type: 'test'
+                }
+            ],
+            MundaBiddiTrackInfo: []
+        });
+    }, 10000);
 
     afterAll(() => {
         const realm = subject.getRealm();
