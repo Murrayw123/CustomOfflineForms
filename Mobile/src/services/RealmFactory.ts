@@ -2,7 +2,7 @@ import Realm, { ObjectSchema, OpenRealmBehaviorType } from 'realm';
 import { Database } from 'services/Db';
 
 const realmFileBehavior = {
-    type: 'openImmediately' as OpenRealmBehaviorType
+    type: 'downloadBeforeOpen' as OpenRealmBehaviorType
 };
 
 export class RealmFactory {
@@ -31,7 +31,7 @@ export class RealmFactory {
                     user: this._db.user,
                     partitionValue: partitionValue,
                     existingRealmFileBehavior: realmFileBehavior,
-                    newRealmFileBehavior: realmFileBehavior
+                    newRealmFileBehavior: realmFileBehavior,
                 }
             });
         }

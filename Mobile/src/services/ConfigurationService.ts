@@ -1,7 +1,6 @@
 import { MundaBiddiConfiguration } from 'configurations/MundaBiddi';
 
 export interface IConfiguration {
-    sceneMap: { [key: string]: () => JSX.Element };
     additionalRoutes: { key: string; title: string; icon: string }[];
     partitionValue: string;
     schemas: Realm.ObjectSchema[];
@@ -10,8 +9,8 @@ export interface IConfiguration {
 export class ConfigurationService {
     private _configuration: IConfiguration;
 
-    constructor() {
-        this._configuration = MundaBiddiConfiguration();
+    constructor(configuration: IConfiguration = MundaBiddiConfiguration) {
+        this._configuration = configuration;
     }
 
     public get configuration(): IConfiguration {

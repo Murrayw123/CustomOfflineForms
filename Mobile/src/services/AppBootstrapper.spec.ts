@@ -4,7 +4,7 @@ describe('AppBootstrapper', () => {
     let subject: AppBootstrapper;
 
     beforeEach(() => {
-        subject = new AppBootstrapper(() => factory());
+        subject = new AppBootstrapper(factory);
     });
 
     it('should log in to the database when bootstrap is called', async () => {

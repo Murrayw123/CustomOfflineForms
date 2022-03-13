@@ -1,16 +1,9 @@
-import { MundabiddiProblemReport } from 'forms/ProblemReportingForm';
-import { Map } from 'components/Map';
 import * as Yup from 'yup';
 import { IConfiguration } from 'services/ConfigurationService';
 
-const SceneMap = {
-    forms: MundabiddiProblemReport,
-    map: Map
-};
-
 const additionalRoutes = [{ key: 'map', title: 'map', icon: 'map' }];
 
-const MundaBiddiProblemSchema = {
+export const MundaBiddiProblemSchema = {
     name: 'MundaBiddiProblem',
     properties: {
         _id: 'objectId?',
@@ -24,6 +17,17 @@ const MundaBiddiProblemSchema = {
     primaryKey: '_id'
 };
 
+export const MundaBiddiTrackInfoSchema = {
+    name: 'MundaBiddiTrackInfo',
+    properties: {
+        _id: 'objectId',
+        data: 'string?',
+        org: 'string',
+        type: 'string',
+    },
+    primaryKey: '_id',
+};
+
 export const MundaBiddiProblemValidationSchema = Yup.object().shape({
     description: Yup.string().required('Description is required'),
     image: Yup.string(),
@@ -33,11 +37,8 @@ export const MundaBiddiProblemValidationSchema = Yup.object().shape({
     type: Yup.string().required('Type is required')
 });
 
-export const MundaBiddiConfiguration = (): IConfiguration => {
-    return {
-        sceneMap: SceneMap,
-        additionalRoutes: additionalRoutes,
-        partitionValue: 'mundabiddi',
-        schemas: [MundaBiddiProblemSchema]
-    };
+export const MundaBiddiConfiguration: IConfiguration = {
+    additionalRoutes: additionalRoutes,
+    partitionValue: 'mundabiddi',
+    schemas: [MundaBiddiProblemSchema, MundaBiddiTrackInfoSchema]
 };

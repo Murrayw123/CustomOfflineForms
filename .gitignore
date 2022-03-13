@@ -128,3 +128,6 @@ mongodb-realm
 *.realm.lock
 Mobile/default.realm.management
 # @end expo-cli
+
+# Jest
+Mobile/.jest

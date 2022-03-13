@@ -16,7 +16,7 @@ export const Bootstrapper = () => {
     useEffect(() => {
         bootstrap();
         return () => {
-            appBootstrapper.services.realmCollection.closeAllRealms();
+            appBootstrapper.cleanUp();
         };
     });
 

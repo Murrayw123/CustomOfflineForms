@@ -5,6 +5,7 @@ import { Credentials } from 'realm';
 import { Subject } from 'rxjs';
 import { NavigationService } from 'services/NavigationService';
 import { ConfigurationService } from 'services/ConfigurationService';
+import { MapService } from 'services/MapService';
 
 export interface Services {
     db: Database;
@@ -12,6 +13,7 @@ export interface Services {
     realmCollection: RealmCollection;
     navigationService: NavigationService;
     configurationService: ConfigurationService;
+    mapService: MapService;
     errorObserver: Subject<string>;
 }
 
@@ -20,10 +22,11 @@ const defaultRoutes = [{ key: 'forms', title: 'Forms', icon: 'clipboard' }];
 export function factory(): Services {
     const db = new Database('dynamicforms_dev-xezyh', Credentials.anonymous());
     const realmFactory = new RealmFactory(db);
-    const realmCollection = new RealmCollection(realmFactory);
     const navigationService = new NavigationService(defaultRoutes);
     const configurationService = new ConfigurationService();
+    const realmCollection = new RealmCollection(realmFactory, configurationService);
     const errorObserver = new Subject<string>();
+    const mapService = new MapService(realmCollection);
 
     return {
         db,
@@ -31,53 +34,33 @@ export function factory(): Services {
         realmCollection,
         navigationService,
         configurationService,
-        errorObserver
+        errorObserver,
+        mapService
     };
 }
 
 export class AppBootstrapper {
-    private readonly _db: Database;
-    private readonly _realmCollection: RealmCollection;
-    private readonly _realmFactory: RealmFactory;
-    private readonly _errorObservable: Subject<string>;
-    private readonly _navigationService: NavigationService;
-    private readonly _configurationService: ConfigurationService;
+    private _services: Services;
 
-    constructor(factory: () => Services = () => factory()) {
-        const {
-            db,
-            realmFactory,
-            realmCollection,
-            errorObserver,
-            navigationService,
-            configurationService
-        } = factory();
-        this._db = db;
-        this._realmFactory = realmFactory;
-        this._realmCollection = realmCollection;
-        this._errorObservable = errorObserver;
-        this._configurationService = configurationService;
-        this._navigationService = navigationService;
+    constructor(factory: () => Services) {
+        this._services = factory();
     }
 
     public async bootstrap(): Promise<void> {
-        const { partitionValue, schemas, additionalRoutes } =
-            this._configurationService.configuration;
+        const { db, realmCollection } = this._services;
+        const { schemas, additionalRoutes } = this._services.configurationService.configuration;
 
-        additionalRoutes.forEach(route => this._navigationService.addRoute(route));
+        additionalRoutes.forEach(route => this._services.navigationService.addRoute(route));
 
-        await this._db.login();
-        await this._realmCollection.addRealm(partitionValue, schemas);
+        await db.login();
+        await realmCollection.addRealm(schemas);
+    }
+
+    public cleanUp(): void {
+        this._services.realmCollection.closeAllRealms();
     }
 
     public get services(): Services {
-        return {
-            db: this._db,
-            realmFactory: this._realmFactory,
-            realmCollection: this._realmCollection,
-            navigationService: this._navigationService,
-            configurationService: this._configurationService,
-            errorObserver: this._errorObservable
-        };
+        return this._services;
     }
 }

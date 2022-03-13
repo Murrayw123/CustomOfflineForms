@@ -42,13 +42,11 @@ export class CameraController {
     }
 
     private async _requestPermission(): Promise<boolean> {
-        console.log('Requesting camera permission', this._camera.requestCameraPermissionsAsync);
         const { status } = await this._camera.requestCameraPermissionsAsync();
         return status === 'granted';
     }
 
     private async _takePicture(): Promise<void> {
-        console.log('camera ready', this._cameraRef);
         this._cameraRef.onCameraReady(async () => {
             const picture = await this._cameraRef.takePictureAsync({
                 base64: true,

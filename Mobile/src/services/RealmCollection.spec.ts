@@ -2,25 +2,39 @@ import { RealmCollection } from 'services/RealmCollection';
 import { RealmFactory } from 'services/RealmFactory';
 import { Database } from 'services/Db';
 import { BSON, Credentials } from 'realm';
-import { MundaBiddiConfiguration } from 'configurations/MundaBiddi';
+import { ConfigurationService } from 'services/ConfigurationService';
+import { TestConfiguration } from 'configurations/TestConfiguration';
 
-const TESTS = 'tests';
+export const TESTS = 'tests';
+
+export async function setupTestDatabase(): Promise<{
+    database: Database;
+    realmFactory: RealmFactory;
+    realmCollection: RealmCollection;
+    configurationService: ConfigurationService;
+}> {
+    const database = new Database('dynamicforms_dev-xezyh', Credentials.anonymous());
+    await database.login();
+    const realmFactory = new RealmFactory(database);
+    const configurationService = new ConfigurationService(TestConfiguration);
+    const realmCollection = new RealmCollection(realmFactory, configurationService);
+    await realmCollection.addRealm(TestConfiguration.schemas, true);
+
+    return { database, realmFactory, configurationService, realmCollection };
+}
 
 describe('RealmCollection basic operations integration test', () => {
-    let realmFactory: RealmFactory;
     let subject: RealmCollection;
     let database: Database;
 
     beforeAll(async () => {
-        database = new Database('dynamicforms_dev-xezyh', Credentials.anonymous());
-        await database.login();
-        realmFactory = new RealmFactory(database);
-        subject = new RealmCollection(realmFactory);
-        await subject.addRealm(TESTS, MundaBiddiConfiguration().schemas, true);
+        const { realmCollection: rc, database: db } = await setupTestDatabase();
+        subject = rc;
+        database = db;
     });
 
     it('should create a new entry in a Realm collection and then delete ', async () => {
-        const realm = subject.getRealmByPartition(TESTS);
+        const realm = subject.getRealm();
 
         let obj: Realm.Object;
         realm.write(() => {
@@ -42,7 +56,8 @@ describe('RealmCollection basic operations integration test', () => {
     });
 
     afterAll(() => {
-        const realm = subject.getRealmByPartition(TESTS);
+        const realm = subject.getRealm();
         realm.close();
+        database.logout();
     });
 });
