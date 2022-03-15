@@ -4,8 +4,11 @@ import { RealmFactory } from 'services/RealmFactory';
 import { Credentials } from 'realm';
 import { Subject } from 'rxjs';
 import { NavigationService } from 'services/NavigationService';
-import { ConfigurationService } from 'services/ConfigurationService';
+import { ConfigurationService, IConfiguration } from 'services/ConfigurationService';
 import { MapService } from 'services/MapService';
+import { MundaBiddiConfiguration } from 'configurations/MundaBiddi';
+import { FormSaverService } from 'services/FormSaverService';
+import { FormController, FormControllerCollection } from 'controllers/FormController';
 
 export interface Services {
     db: Database;
@@ -15,18 +18,22 @@ export interface Services {
     configurationService: ConfigurationService;
     mapService: MapService;
     errorObserver: Subject<string>;
+    formSaverService: FormSaverService;
+    formControllerCollection: FormControllerCollection;
 }
 
 const defaultRoutes = [{ key: 'forms', title: 'Forms', icon: 'clipboard' }];
 
-export function factory(): Services {
+export function factory(configuration: IConfiguration = MundaBiddiConfiguration): Services {
     const db = new Database('dynamicforms_dev-xezyh', Credentials.anonymous());
-    const realmFactory = new RealmFactory(db);
+    const configurationService = new ConfigurationService(configuration);
+    const realmFactory = new RealmFactory(db, configurationService);
     const navigationService = new NavigationService(defaultRoutes);
-    const configurationService = new ConfigurationService();
     const realmCollection = new RealmCollection(realmFactory, configurationService);
     const errorObserver = new Subject<string>();
     const mapService = new MapService(realmCollection);
+    const formControllerCollection = new FormControllerCollection();
+    const formSaverService = new FormSaverService(formControllerCollection);
 
     return {
         db,
@@ -35,7 +42,9 @@ export function factory(): Services {
         navigationService,
         configurationService,
         errorObserver,
-        mapService
+        mapService,
+        formControllerCollection,
+        formSaverService
     };
 }
 
@@ -47,17 +56,34 @@ export class AppBootstrapper {
     }
 
     public async bootstrap(): Promise<void> {
-        const { db, realmCollection } = this._services;
-        const { schemas, additionalRoutes } = this._services.configurationService.configuration;
+        const {
+            db,
+            realmCollection,
+            formControllerCollection,
+            configurationService,
+            navigationService
+        } = this._services;
 
-        additionalRoutes.forEach(route => this._services.navigationService.addRoute(route));
+        const { schemas, additionalRoutes, formTypes } = configurationService.configuration;
+
+        additionalRoutes.forEach(route => navigationService.addRoute(route));
+
+        formTypes.forEach(realmFormSchema => {
+            const formController = new FormController(
+                realmFormSchema,
+                realmCollection,
+                configurationService
+            );
+            formControllerCollection.addFormController(formController);
+        });
 
         await db.login();
         await realmCollection.addRealm(schemas);
     }
 
-    public cleanUp(): void {
+    public async cleanUp(): Promise<void> {
         this._services.realmCollection.closeAllRealms();
+        return this._services.db.logout();
     }
 
     public get services(): Services {

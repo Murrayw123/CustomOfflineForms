@@ -1,38 +1,21 @@
 import { RealmCollection } from 'services/RealmCollection';
-import { RealmFactory } from 'services/RealmFactory';
 import { Database } from 'services/Db';
-import { BSON, Credentials } from 'realm';
-import { ConfigurationService } from 'services/ConfigurationService';
+import { BSON } from 'realm';
+import { AppBootstrapper, factory } from 'services/AppBootstrapper';
 import { TestConfiguration } from 'configurations/TestConfiguration';
 
-export const TESTS = 'tests';
-
-export async function setupTestDatabase(): Promise<{
-    database: Database;
-    realmFactory: RealmFactory;
-    realmCollection: RealmCollection;
-    configurationService: ConfigurationService;
-}> {
-    const database = new Database('dynamicforms_dev-xezyh', Credentials.anonymous());
-    await database.login();
-    const realmFactory = new RealmFactory(database);
-    const configurationService = new ConfigurationService(TestConfiguration);
-    const realmCollection = new RealmCollection(realmFactory, configurationService);
-    await realmCollection.addRealm(TestConfiguration.schemas, true);
-
-    return { database, realmFactory, configurationService, realmCollection };
-}
+const TESTS = 'tests';
 
 describe('RealmCollection basic operations integration test', () => {
     let subject: RealmCollection;
-    let database: Database;
+    let db: Database;
     let objId: BSON.ObjectId;
     let realm: Realm;
 
     beforeAll(async () => {
-        const { realmCollection: rc, database: db } = await setupTestDatabase();
-        subject = rc;
-        database = db;
+        const bootstrapper = new AppBootstrapper(() => factory(TestConfiguration));
+        await bootstrapper.bootstrap();
+        subject = bootstrapper.services.realmCollection;
     });
 
     beforeAll(() => {
@@ -45,7 +28,6 @@ describe('RealmCollection basic operations integration test', () => {
             obj = realm.create('MundaBiddiProblem', {
                 _id: objId,
                 description: 'Test',
-                image: 'Test',
                 latitude: 132,
                 longitude: 142,
                 org: TESTS,
@@ -62,10 +44,9 @@ describe('RealmCollection basic operations integration test', () => {
                 {
                     _id: objId,
                     description: 'Test',
-                    image: 'Test',
                     latitude: 132,
                     longitude: 142,
-                    org: 'tests',
+                    org: TESTS,
                     type: 'test'
                 }
             ],
@@ -86,7 +67,6 @@ describe('RealmCollection basic operations integration test', () => {
             newObj = realm.create('MundaBiddiProblem', {
                 _id: newObjId,
                 description: 'Test2',
-                image: 'Test2',
                 latitude: 1000,
                 longitude: 1000,
                 org: TESTS,
@@ -102,7 +82,6 @@ describe('RealmCollection basic operations integration test', () => {
                 {
                     _id: objId,
                     description: 'Test',
-                    image: 'Test',
                     latitude: 132,
                     longitude: 142,
                     org: 'tests',
@@ -111,7 +90,6 @@ describe('RealmCollection basic operations integration test', () => {
                 {
                     _id: newObjId,
                     description: 'Test2',
-                    image: 'Test2',
                     latitude: 1000,
                     longitude: 1000,
                     org: TESTS,
@@ -125,6 +103,6 @@ describe('RealmCollection basic operations integration test', () => {
     afterAll(() => {
         const realm = subject.getRealm();
         realm.close();
-        database.logout();
+        db.logout();
     });
 });

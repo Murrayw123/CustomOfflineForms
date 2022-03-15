@@ -4,5 +4,6 @@ import { MundaBiddiProblemSchema, MundaBiddiTrackInfoSchema } from 'configuratio
 export const TestConfiguration: IConfiguration = {
     additionalRoutes: [],
     partitionValue: 'TEST',
-    schemas: [MundaBiddiProblemSchema, MundaBiddiTrackInfoSchema]
+    schemas: [MundaBiddiProblemSchema, MundaBiddiTrackInfoSchema],
+    formTypes: [MundaBiddiProblemSchema]
 };

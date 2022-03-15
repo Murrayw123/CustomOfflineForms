@@ -8,10 +8,6 @@ export interface MapMarker {
     [key: string]: any;
 }
 
-function convertStringToGeoJSON(str: string): string {
-    return JSON.parse(str);
-}
-
 export class MapService {
     private _realmCollection: RealmCollection;
 
@@ -22,7 +18,7 @@ export class MapService {
     public get mapTrack(): GeoJSON.FeatureCollection {
         const mapTrack =
             this._realmCollection.getRealmObjectsAsJS()[MundaBiddiTrackInfoSchema.name][0].data;
-        return JSON.parse(convertStringToGeoJSON(mapTrack as unknown as string));
+        return JSON.parse(JSON.parse(mapTrack as unknown as string));
     }
 
     public subscribeToMapMarkerChanges(callback: (markers: MapMarker[]) => void): void {
@@ -30,5 +26,19 @@ export class MapService {
             const markers = realmObjectsAsJS[MundaBiddiProblemSchema.name];
             callback(markers as MapMarker[]);
         });
+    }
+
+    public static getDescriptionFromMapMarker(marker: MapMarker) {
+        return {
+            description: marker.description,
+            title: marker.type
+        };
+    }
+
+    public static get centerCoordinate(): { longitude: number; latitude: number } {
+        return {
+            longitude: 116.1683,
+            latitude: -31.9022
+        };
     }
 }

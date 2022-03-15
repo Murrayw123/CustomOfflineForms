@@ -1,5 +1,6 @@
 import Realm, { ObjectSchema, OpenRealmBehaviorType } from 'realm';
 import { Database } from 'services/Db';
+import { ConfigurationService } from 'services/ConfigurationService';
 
 const realmFileBehavior = {
     type: 'downloadBeforeOpen' as OpenRealmBehaviorType
@@ -7,17 +8,16 @@ const realmFileBehavior = {
 
 export class RealmFactory {
     private _db: Database;
+    private _configurationService: ConfigurationService;
 
-    constructor(db: Database) {
+    constructor(db: Database, configurationService: ConfigurationService) {
         this._db = db;
+        this._configurationService = configurationService;
     }
 
-    public async openRealm(
-        partitionValue: string,
-        schemas: Array<ObjectSchema>,
-        inMemory: boolean = false
-    ): Promise<Realm> {
-        // in memory is really just used for testing
+    public async openRealm(partitionValue: string, schemas: Array<ObjectSchema>): Promise<Realm> {
+        const inMemory = this._configurationService.configuration.partitionValue === 'TEST';
+
         if (inMemory) {
             return Realm.open({
                 schema: schemas,
@@ -31,7 +31,7 @@ export class RealmFactory {
                     user: this._db.user,
                     partitionValue: partitionValue,
                     existingRealmFileBehavior: realmFileBehavior,
-                    newRealmFileBehavior: realmFileBehavior,
+                    newRealmFileBehavior: realmFileBehavior
                 }
             });
         }

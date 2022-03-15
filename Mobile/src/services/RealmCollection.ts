@@ -17,9 +17,9 @@ export class RealmCollection {
         this._configurationService = configurationService;
     }
 
-    public async addRealm(schemas: Array<ObjectSchema>, inMemory: boolean = false): Promise<void> {
+    public async addRealm(schemas: Array<ObjectSchema>): Promise<void> {
         const partitionValue = this._configurationService.configuration.partitionValue;
-        const realm = await this._realmFactory.openRealm(partitionValue, schemas, inMemory);
+        const realm = await this._realmFactory.openRealm(partitionValue, schemas);
         this._realmCollection.push({ partition: partitionValue, realm: realm });
     }
 

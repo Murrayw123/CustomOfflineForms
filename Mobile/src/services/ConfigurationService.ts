@@ -1,15 +1,14 @@
-import { MundaBiddiConfiguration } from 'configurations/MundaBiddi';
-
 export interface IConfiguration {
     additionalRoutes: { key: string; title: string; icon: string }[];
     partitionValue: string;
     schemas: Realm.ObjectSchema[];
+    formTypes: Realm.ObjectSchema[];
 }
 
 export class ConfigurationService {
     private _configuration: IConfiguration;
 
-    constructor(configuration: IConfiguration = MundaBiddiConfiguration) {
+    constructor(configuration: IConfiguration) {
         this._configuration = configuration;
     }
 

@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Formik } from 'formik';
 import { TextInput } from 'react-native-paper';
 import { LocationWithButton } from 'components/Location';
 import { SelectableMenuItem } from 'components/ItemWithPopup';
 import { View } from 'react-native';
-import ImagePickerExample from 'components/ImagePicker';
 import { SaveButton } from 'components/SaveButton';
-import { MundaBiddiProblemValidationSchema } from 'configurations/MundaBiddi';
+import {
+    MundaBiddiProblemSchema,
+    MundaBiddiProblemValidationSchema
+} from 'configurations/MundaBiddi';
+import { ServicesContext } from 'services/Context';
+import { FormValues } from 'controllers/FormController';
 
 const MundabiddiProblems = [
     { display: 'Trail Obstructed', value: 'trail_obstruction' },
@@ -18,6 +22,8 @@ const MundabiddiProblems = [
 ];
 
 export const MundabiddiProblemReport = () => {
+    const { formSaverService } = useContext(ServicesContext);
+
     const formik = {
         validationSchema: MundaBiddiProblemValidationSchema,
         initialValues: {
@@ -25,11 +31,10 @@ export const MundabiddiProblemReport = () => {
             description: '',
             latitude: '0',
             longitude: '0',
-            type: '',
-            image: ''
+            type: ''
         },
-        onSubmit: (values: any) => {
-            console.log(values);
+        onSubmit: (values: FormValues) => {
+            formSaverService.saveForm(values, MundaBiddiProblemSchema.name);
         }
     };
 
@@ -58,7 +63,6 @@ export const MundabiddiProblemReport = () => {
                         latitude={values.latitude}
                         longitude={values.longitude}
                     />
-                    <ImagePickerExample />
                     <SaveButton onSave={handleSubmit} />
                 </View>
             )}
