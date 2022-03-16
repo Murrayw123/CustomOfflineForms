@@ -24,14 +24,14 @@ export interface Services {
 
 const defaultRoutes = [{ key: 'forms', title: 'Forms', icon: 'clipboard' }];
 
-export function factory(configuration: IConfiguration = MundaBiddiConfiguration): Services {
+export function servicesFactory(configuration: IConfiguration = MundaBiddiConfiguration): Services {
     const db = new Database('dynamicforms_dev-xezyh', Credentials.anonymous());
     const configurationService = new ConfigurationService(configuration);
     const realmFactory = new RealmFactory(db, configurationService);
     const navigationService = new NavigationService(defaultRoutes);
     const realmCollection = new RealmCollection(realmFactory, configurationService);
     const errorObserver = new Subject<string>();
-    const mapService = new MapService(realmCollection);
+    const mapService = new MapService(realmCollection, configurationService);
     const formControllerCollection = new FormControllerCollection();
     const formSaverService = new FormSaverService(formControllerCollection);
 
@@ -70,7 +70,7 @@ export class AppBootstrapper {
 
         formTypes.forEach(realmFormSchema => {
             const formController = new FormController(
-                realmFormSchema,
+                realmFormSchema.modelSchema,
                 realmCollection,
                 configurationService
             );

@@ -31,6 +31,7 @@ export const LocationWithButton = (props: Props): JSX.Element => {
                 onChangeText={props.onLatitudeChange}
                 value={String(props.latitude)}
                 maxLength={10}
+                disabled
             />
             <TextInput
                 label="Longitude"
@@ -38,6 +39,7 @@ export const LocationWithButton = (props: Props): JSX.Element => {
                 onChangeText={props.onLongitudeChange}
                 value={String(props.longitude)}
                 maxLength={10}
+                disabled
             />
 
             <Button mode="contained" onPress={getLocation}>

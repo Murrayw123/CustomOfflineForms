@@ -4,9 +4,9 @@ import MapboxGL from '@react-native-mapbox-gl/maps';
 import { ServicesContext } from 'services/Context';
 import * as ExpoLocation from 'expo-location';
 import { MapMarker, MapService } from 'services/MapService';
-import { capitalize } from 'lodash';
 import { Avatar } from 'react-native-paper';
 import { UserLocation } from 'controllers/UserLocation';
++
 
 MapboxGL.setAccessToken(
     'pk.eyJ1IjoibXVycmF5dzEyMyIsImEiOiJja2FhYW1ja24weGxyMnNudjZvcWh0ZnA2In0.HFw1UOLPuKINwj_-nT0dyw'
@@ -44,11 +44,6 @@ const styles = StyleSheet.create({
     }
 });
 
-const formatMarker = (marker: MapMarker): string => {
-    const { title, description } = MapService.getDescriptionFromMapMarker(marker);
-    return `${capitalize(title)}: ${'\n' + description}`;
-};
-
 export const Map = () => {
     const { mapService, errorObserver } = useContext(ServicesContext);
     const mapMarkers: MapMarker[] = [];
@@ -64,6 +59,7 @@ export const Map = () => {
 
     React.useEffect(() => {
         mapService.subscribeToMapMarkerChanges(markers => {
+            console.log(markers);
             setMarkers(markers);
         });
     }, [mapService]);
@@ -73,13 +69,18 @@ export const Map = () => {
         setCoords([location.coords.longitude, location.coords.latitude]);
     };
 
+    const formatMapMarker = (marker: MapMarker): string => {
+        const { title, description } = mapService.getDescriptionFromMapMarker(marker);
+        return `${title}: \n ${description}`;
+    };
+
     const pointAnnotations = markers.map(m => {
         const id = m._id.toString();
 
         return (
             <MapboxGL.PointAnnotation key={id} id={id} coordinate={[m.longitude, m.latitude]}>
                 <View />
-                <MapboxGL.Callout title={formatMarker(m)} />
+                <MapboxGL.Callout title={formatMapMarker(m)} />
             </MapboxGL.PointAnnotation>
         );
     });
@@ -99,7 +100,10 @@ export const Map = () => {
                     />
                     {mapTrack && (
                         <MapboxGL.ShapeSource id="line1" shape={mapTrack}>
-                            <MapboxGL.LineLayer id="linelayer1" style={{ lineColor: 'red', lineWidth: 2 }} />
+                            <MapboxGL.LineLayer
+                                id="linelayer1"
+                                style={{ lineColor: 'red', lineWidth: 2 }}
+                            />
                         </MapboxGL.ShapeSource>
                     )}
                     {pointAnnotations}

@@ -1,15 +1,21 @@
 import React, { useEffect } from 'react';
-import { AppBootstrapper, factory } from 'services/AppBootstrapper';
-import { Provider as PaperProvider } from 'react-native-paper';
+import { AppBootstrapper } from 'services/AppBootstrapper';
+import { Provider as PaperProvider, Text } from 'react-native-paper';
 import { HeaderComponent } from 'components/Header';
 import { NavigationComponent } from 'components/BottomBar';
 import { ServicesContext } from 'services/Context';
 
-export const Bootstrapper = () => {
-    const appBootstrapper = new AppBootstrapper(() => factory());
+interface BootstrapperProps {
+    appBootstrapper: AppBootstrapper;
+}
+
+export const Bootstrapper = (props: BootstrapperProps) => {
+    const [loading, setLoading] = React.useState(true);
+    const { appBootstrapper } = props;
 
     const bootstrap = async () => {
         await appBootstrapper.bootstrap();
+        setLoading(false);
     };
 
     useEffect(() => {
@@ -17,16 +23,20 @@ export const Bootstrapper = () => {
         return () => {
             appBootstrapper.cleanUp();
         };
-    });
+    }, [appBootstrapper]);
 
     return (
         <PaperProvider>
-            <ServicesContext.Provider value={appBootstrapper.services}>
-                <>
-                    <HeaderComponent />
-                    <NavigationComponent />
-                </>
-            </ServicesContext.Provider>
+            {loading ? (
+                <Text>Loading</Text>
+            ) : (
+                <ServicesContext.Provider value={appBootstrapper.services}>
+                    <>
+                        <HeaderComponent />
+                        <NavigationComponent />
+                    </>
+                </ServicesContext.Provider>
+            )}
         </PaperProvider>
     );
 };

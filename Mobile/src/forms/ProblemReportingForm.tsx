@@ -5,37 +5,20 @@ import { LocationWithButton } from 'components/Location';
 import { SelectableMenuItem } from 'components/ItemWithPopup';
 import { View } from 'react-native';
 import { SaveButton } from 'components/SaveButton';
-import {
-    MundaBiddiProblemSchema,
-    MundaBiddiProblemValidationSchema
-} from 'configurations/MundaBiddi';
+import { MundaBiddiProblemSchema } from 'configurations/MundaBiddi';
 import { ServicesContext } from 'services/Context';
 import { FormValues } from 'controllers/FormController';
 
-const MundabiddiProblems = [
-    { display: 'Trail Obstructed', value: 'trail_obstruction' },
-    { display: 'Trail eroded', value: 'trail_eroded' },
-    { display: 'Structural Damage', value: 'structural_damage' },
-    { display: 'Motorised Vehicle on Trail', value: 'vehicle_on_trail' },
-    { display: 'Missing Markers', value: 'missing_markers' },
-    { display: 'Other', value: 'other' }
-];
-
-export const MundabiddiProblemReport = () => {
-    const { formSaverService } = useContext(ServicesContext);
+export const ProblemReport = () => {
+    const { formSaverService, configurationService } = useContext(ServicesContext);
+    const formType = configurationService.getFormTypeFromKey(MundaBiddiProblemSchema.name);
 
     const formik = {
-        validationSchema: MundaBiddiProblemValidationSchema,
-        initialValues: {
-            org: 'Mundabiddi Trail Foundation',
-            description: '',
-            latitude: '0',
-            longitude: '0',
-            type: ''
-        },
         onSubmit: (values: FormValues) => {
-            formSaverService.saveForm(values, MundaBiddiProblemSchema.name);
-        }
+            formSaverService.saveForm(values, formType.name);
+        },
+        initialValues: formType.initialValues,
+        validationSchema: formType.validationSchema
     };
 
     return (
@@ -50,7 +33,7 @@ export const MundabiddiProblemReport = () => {
                     <SelectableMenuItem
                         value={values.type}
                         onMenuItemSelected={handleChange('type')}
-                        menuOptions={MundabiddiProblems}
+                        menuOptions={formType.formFieldOptions.type.options}
                     />
                     <TextInput
                         label="Problem Description"

@@ -1,7 +1,7 @@
-import { MundabiddiProblemReport } from 'forms/ProblemReportingForm';
+import { ProblemReport } from 'forms/ProblemReportingForm';
 import { Map } from 'components/Map';
 
 export const MundaBiddiSceneMap = {
-    forms: MundabiddiProblemReport,
+    forms: ProblemReport,
     map: Map
 };

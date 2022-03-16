@@ -1,5 +1,5 @@
 import { MundaBiddiProblemSchema } from 'configurations/MundaBiddi';
-import { AppBootstrapper, factory } from 'services/AppBootstrapper';
+import { AppBootstrapper, servicesFactory } from 'services/AppBootstrapper';
 import { TestConfiguration } from 'configurations/TestConfiguration';
 import { FormSaverService } from 'services/FormSaverService';
 import { RealmCollection } from 'services/RealmCollection';
@@ -10,7 +10,7 @@ describe('Saving a form', () => {
     let appBootstrapper: AppBootstrapper;
 
     beforeEach(() => {
-        appBootstrapper = new AppBootstrapper(() => factory(TestConfiguration));
+        appBootstrapper = new AppBootstrapper(() => servicesFactory(TestConfiguration));
         appBootstrapper.bootstrap();
 
         formSaverService = appBootstrapper.services.formSaverService;

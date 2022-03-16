@@ -2,7 +2,7 @@ import * as React from 'react';
 import { View } from 'react-native';
 import { Button, Paragraph, Dialog, Portal, Provider } from 'react-native-paper';
 import { useContext } from 'react';
-import { ServicesContext } from 'Bootstrapper';
+import { ServicesContext } from 'services/Context';
 
 const MyComponent = () => {
     const { errorObserver } = useContext(ServicesContext);

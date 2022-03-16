@@ -1,7 +1,7 @@
 import { RealmCollection } from 'services/RealmCollection';
 import { Database } from 'services/Db';
 import { BSON } from 'realm';
-import { AppBootstrapper, factory } from 'services/AppBootstrapper';
+import { AppBootstrapper, servicesFactory } from 'services/AppBootstrapper';
 import { TestConfiguration } from 'configurations/TestConfiguration';
 
 const TESTS = 'tests';
@@ -13,7 +13,7 @@ describe('RealmCollection basic operations integration test', () => {
     let realm: Realm;
 
     beforeAll(async () => {
-        const bootstrapper = new AppBootstrapper(() => factory(TestConfiguration));
+        const bootstrapper = new AppBootstrapper(() => servicesFactory(TestConfiguration));
         await bootstrapper.bootstrap();
         subject = bootstrapper.services.realmCollection;
     });
