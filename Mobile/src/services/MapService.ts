@@ -27,7 +27,6 @@ export class MapService {
     public subscribeToMapMarkerChanges(callback: (markers: MapMarker[]) => void): void {
         this._realmCollection.subscribeToRealmChanges(realmObjectsAsJS => {
             const markers = realmObjectsAsJS[MundaBiddiProblemSchema.name];
-            console.log(markers);
             callback(markers as MapMarker[]);
         });
     }

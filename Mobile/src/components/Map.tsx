@@ -6,9 +6,8 @@ import * as ExpoLocation from 'expo-location';
 import { MapMarker, MapService } from 'services/MapService';
 import { Avatar } from 'react-native-paper';
 import { UserLocation } from 'controllers/UserLocation';
-+
-
-MapboxGL.setAccessToken(
+import { offlineMapDownloader } from 'components/OfflineMap';
++MapboxGL.setAccessToken(
     'pk.eyJ1IjoibXVycmF5dzEyMyIsImEiOiJja2FhYW1ja24weGxyMnNudjZvcWh0ZnA2In0.HFw1UOLPuKINwj_-nT0dyw'
 );
 
@@ -45,7 +44,7 @@ const styles = StyleSheet.create({
 });
 
 export const Map = () => {
-    const { mapService, errorObserver } = useContext(ServicesContext);
+    const { mapService, errorObserver, configurationService } = useContext(ServicesContext);
     const mapMarkers: MapMarker[] = [];
     const mapTrack = mapService.mapTrack;
 
@@ -59,9 +58,12 @@ export const Map = () => {
 
     React.useEffect(() => {
         mapService.subscribeToMapMarkerChanges(markers => {
-            console.log(markers);
             setMarkers(markers);
         });
+    }, [mapService]);
+
+    React.useEffect(() => {
+        offlineMapDownloader(configurationService.configuration.boundingBox);
     }, [mapService]);
 
     const setCoordsOnPress = async () => {

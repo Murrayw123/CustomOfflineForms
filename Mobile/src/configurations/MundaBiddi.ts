@@ -1,8 +1,6 @@
 import * as Yup from 'yup';
 import { IConfiguration } from 'services/ConfigurationService';
 
-const additionalRoutes = [{ key: 'map', title: 'Map', icon: 'map' }];
-
 export const MundaBiddiProblemSchema = {
     name: 'MundaBiddiProblem',
     properties: {
@@ -62,8 +60,11 @@ export const MundaBiddiProblemFormType = {
 };
 
 export const MundaBiddiConfiguration: IConfiguration = {
-    additionalRoutes: additionalRoutes,
     partitionValue: 'mundabiddi',
     schemas: [MundaBiddiProblemSchema, MundaBiddiTrackInfoSchema],
-    formTypes: [MundaBiddiProblemFormType]
+    formTypes: [MundaBiddiProblemFormType],
+    boundingBox: [
+        [117.87114, -31.72529],
+        [114.840035, -34.95242]
+    ]
 };

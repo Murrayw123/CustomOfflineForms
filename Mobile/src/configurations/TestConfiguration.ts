@@ -6,8 +6,11 @@ import {
 } from 'configurations/MundaBiddi';
 
 export const TestConfiguration: IConfiguration = {
-    additionalRoutes: [],
     partitionValue: 'TEST',
     schemas: [MundaBiddiProblemSchema, MundaBiddiTrackInfoSchema],
-    formTypes: [MundaBiddiProblemFormType]
+    formTypes: [MundaBiddiProblemFormType],
+    boundingBox: [
+        [123, 123],
+        [123, 123]
+    ]
 };

@@ -22,7 +22,10 @@ export interface Services {
     formControllerCollection: FormControllerCollection;
 }
 
-const defaultRoutes = [{ key: 'forms', title: 'Forms', icon: 'clipboard' }];
+const defaultRoutes = [
+    { key: 'forms', title: 'Forms', icon: 'clipboard' },
+    { key: 'map', title: 'Map', icon: 'map' }
+];
 
 export function servicesFactory(configuration: IConfiguration = MundaBiddiConfiguration): Services {
     const db = new Database('dynamicforms_dev-xezyh', Credentials.anonymous());
@@ -56,17 +59,10 @@ export class AppBootstrapper {
     }
 
     public async bootstrap(): Promise<void> {
-        const {
-            db,
-            realmCollection,
-            formControllerCollection,
-            configurationService,
-            navigationService
-        } = this._services;
+        const { db, realmCollection, formControllerCollection, configurationService } =
+            this._services;
 
-        const { schemas, additionalRoutes, formTypes } = configurationService.configuration;
-
-        additionalRoutes.forEach(route => navigationService.addRoute(route));
+        const { schemas, formTypes } = configurationService.configuration;
 
         formTypes.forEach(realmFormSchema => {
             const formController = new FormController(

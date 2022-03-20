@@ -9,10 +9,10 @@ interface FormType {
 }
 
 export interface IConfiguration {
-    additionalRoutes: { key: string; title: string; icon: string }[];
     partitionValue: string;
     schemas: Realm.ObjectSchema[];
     formTypes: FormType[];
+    boundingBox: [[number, number], [number, number]];
 }
 
 export class ConfigurationService {
