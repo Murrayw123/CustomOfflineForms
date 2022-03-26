@@ -3,10 +3,10 @@ import { Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native';
 import MapboxGL from '@react-native-mapbox-gl/maps';
 import { ServicesContext } from 'services/Context';
 import * as ExpoLocation from 'expo-location';
-import { MapMarker, MapService } from 'services/MapService';
 import { Avatar } from 'react-native-paper';
 import { UserLocation } from 'controllers/UserLocation';
 import { offlineMapDownloader } from 'components/OfflineMap';
+import { DisplayableMapMarker } from 'services/MarkerService';
 +MapboxGL.setAccessToken(
     'pk.eyJ1IjoibXVycmF5dzEyMyIsImEiOiJja2FhYW1ja24weGxyMnNudjZvcWh0ZnA2In0.HFw1UOLPuKINwj_-nT0dyw'
 );
@@ -43,37 +43,38 @@ const styles = StyleSheet.create({
     }
 });
 
+const formatMapMarker = (marker: DisplayableMapMarker): string => {
+    return `${marker.title}: \n ${marker.description}`;
+};
+
 export const Map = () => {
-    const { mapService, errorObserver, configurationService } = useContext(ServicesContext);
-    const mapMarkers: MapMarker[] = [];
+    const { markerService, mapService, errorObserver, configurationService } =
+        useContext(ServicesContext);
+    const { offlineMapBoundingBox, centerCoordinates } = configurationService.configuration;
+    const mapMarkers: DisplayableMapMarker[] = [];
     const mapTrack = mapService.mapTrack;
 
     const [markers, setMarkers] = React.useState(mapMarkers);
     const [coords, setCoords] = React.useState([
-        MapService.centerCoordinate.longitude,
-        MapService.centerCoordinate.latitude
+        centerCoordinates.longitude,
+        centerCoordinates.latitude
     ]);
 
     const userLocation = new UserLocation(ExpoLocation, errorObserver);
 
     React.useEffect(() => {
-        mapService.subscribeToMapMarkerChanges(markers => {
+        markerService.subscribeToMapMarkerChanges(markers => {
             setMarkers(markers);
         });
-    }, [mapService]);
+    }, [markerService]);
 
     React.useEffect(() => {
-        offlineMapDownloader(configurationService.configuration.boundingBox);
+        offlineMapDownloader(offlineMapBoundingBox);
     }, [mapService]);
 
     const setCoordsOnPress = async () => {
         const location = await userLocation.getLocationForComponent();
         setCoords([location.coords.longitude, location.coords.latitude]);
-    };
-
-    const formatMapMarker = (marker: MapMarker): string => {
-        const { title, description } = mapService.getDescriptionFromMapMarker(marker);
-        return `${title}: \n ${description}`;
     };
 
     const pointAnnotations = markers.map(m => {

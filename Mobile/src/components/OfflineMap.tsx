@@ -17,7 +17,7 @@ export const offlineMapDownloader = async (bounds: [[number, number], [number, n
                 name: 'offlineMap',
                 bounds: bounds,
                 minZoom: 10,
-                maxZoom: 10,
+                maxZoom: 21,
                 styleURL: 'mapbox://styles/murrayw123/ckkdfkpan08m317ogw6ebdoli'
             },
             progressListener,

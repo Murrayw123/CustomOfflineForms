@@ -7,8 +7,12 @@ import { NavigationService } from 'services/NavigationService';
 import { ConfigurationService, IConfiguration } from 'services/ConfigurationService';
 import { MapService } from 'services/MapService';
 import { MundaBiddiConfiguration } from 'configurations/MundaBiddi';
-import { FormSaverService } from 'services/FormSaverService';
-import { FormController, FormControllerCollection } from 'controllers/FormController';
+import {
+    FormController,
+    FormControllerCollection,
+    FormTypeCollection
+} from 'controllers/FormController';
+import { MarkerService } from 'services/MarkerService';
 
 export interface Services {
     db: Database;
@@ -17,9 +21,10 @@ export interface Services {
     navigationService: NavigationService;
     configurationService: ConfigurationService;
     mapService: MapService;
+    markerService: MarkerService;
     errorObserver: Subject<string>;
-    formSaverService: FormSaverService;
     formControllerCollection: FormControllerCollection;
+    formTypeCollection: FormTypeCollection;
 }
 
 const defaultRoutes = [
@@ -33,10 +38,15 @@ export function servicesFactory(configuration: IConfiguration = MundaBiddiConfig
     const realmFactory = new RealmFactory(db, configurationService);
     const navigationService = new NavigationService(defaultRoutes);
     const realmCollection = new RealmCollection(realmFactory, configurationService);
+    const formTypeCollection = new FormTypeCollection();
+    const formControllerCollection = new FormControllerCollection(formTypeCollection);
     const errorObserver = new Subject<string>();
-    const mapService = new MapService(realmCollection, configurationService);
-    const formControllerCollection = new FormControllerCollection();
-    const formSaverService = new FormSaverService(formControllerCollection);
+    const markerService = new MarkerService(
+        realmCollection,
+        formTypeCollection,
+        configurationService
+    );
+    const mapService = new MapService(realmCollection, configurationService, markerService);
 
     return {
         db,
@@ -46,8 +56,9 @@ export function servicesFactory(configuration: IConfiguration = MundaBiddiConfig
         configurationService,
         errorObserver,
         mapService,
+        markerService,
         formControllerCollection,
-        formSaverService
+        formTypeCollection
     };
 }
 
@@ -59,22 +70,29 @@ export class AppBootstrapper {
     }
 
     public async bootstrap(): Promise<void> {
-        const { db, realmCollection, formControllerCollection, configurationService } =
-            this._services;
+        const {
+            db,
+            realmCollection,
+            formControllerCollection,
+            configurationService,
+            formTypeCollection
+        } = this._services;
 
         const { schemas, formTypes } = configurationService.configuration;
+        await db.login();
+        await realmCollection.addRealm(schemas);
 
-        formTypes.forEach(realmFormSchema => {
+        formTypes.forEach(formType => {
+            formTypeCollection.addFormType(formType);
+
             const formController = new FormController(
-                realmFormSchema.modelSchema,
+                formType,
                 realmCollection,
                 configurationService
             );
+
             formControllerCollection.addFormController(formController);
         });
-
-        await db.login();
-        await realmCollection.addRealm(schemas);
     }
 
     public async cleanUp(): Promise<void> {

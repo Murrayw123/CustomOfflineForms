@@ -2,8 +2,8 @@ import { ObjectSchema } from 'realm';
 import { RealmFactory } from 'services/RealmFactory';
 import { ConfigurationService } from 'services/ConfigurationService';
 
-interface RealmAsJS {
-    [key: string]: Array<{ [key: string]: unknown }>;
+export interface RealmAsJS {
+    [key: string]: Array<{ [key: string]: any }>;
 }
 
 export class RealmCollection {

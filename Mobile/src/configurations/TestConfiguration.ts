@@ -1,16 +1,6 @@
 import { IConfiguration } from 'services/ConfigurationService';
-import {
-    MundaBiddiProblemFormType,
-    MundaBiddiProblemSchema,
-    MundaBiddiTrackInfoSchema
-} from 'configurations/MundaBiddi';
+import { MundaBiddiConfiguration } from 'configurations/MundaBiddi';
 
-export const TestConfiguration: IConfiguration = {
-    partitionValue: 'TEST',
-    schemas: [MundaBiddiProblemSchema, MundaBiddiTrackInfoSchema],
-    formTypes: [MundaBiddiProblemFormType],
-    boundingBox: [
-        [123, 123],
-        [123, 123]
-    ]
-};
+export const TestConfiguration: IConfiguration = Object.assign({}, MundaBiddiConfiguration, {
+    partitionValue: 'TEST'
+});

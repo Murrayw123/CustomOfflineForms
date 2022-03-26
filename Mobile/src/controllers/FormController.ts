@@ -1,6 +1,6 @@
-import { BSON, ObjectSchema } from 'realm';
+import { BSON } from 'realm';
 import { RealmCollection } from 'services/RealmCollection';
-import { ConfigurationService } from 'services/ConfigurationService';
+import { ConfigurationService, FormType } from 'services/ConfigurationService';
 
 export interface FormValues {
     [key: string]: string;
@@ -14,24 +14,28 @@ interface ConvertedFormValues {
 const RESERVED_FIELDS = ['_id', 'org'];
 
 export class FormController {
-    private _schema: ObjectSchema;
+    private _formType: FormType;
     private _realmCollection: RealmCollection;
     private _configurationService: ConfigurationService;
 
     constructor(
-        realmSchema: ObjectSchema,
+        formType: FormType,
         realmCollection: RealmCollection,
         configurationService: ConfigurationService
     ) {
-        this._schema = realmSchema;
+        this._formType = formType;
         this._realmCollection = realmCollection;
         this._configurationService = configurationService;
+    }
+
+    get formTypeName(): string {
+        return this._formType.name;
     }
 
     public createNewFormSubmission(formValues: FormValues): void {
         const realm = this._realmCollection.getRealm();
         realm.write(() => {
-            realm.create(this._schema.name, this._parseFormValues(formValues));
+            realm.create(this._formType.name, this._parseFormValues(formValues));
         });
     }
 
@@ -46,7 +50,7 @@ export class FormController {
         Object.keys(formValues)
             .filter(key => !RESERVED_FIELDS.includes(key))
             .forEach((key: string) => {
-                if (this._schema.properties[key] === 'double') {
+                if (this._formType.modelSchema.properties[key] === 'double') {
                     realmObject[key] = parseFloat(formValues[key]);
                 } else {
                     realmObject[key] = formValues[key];
@@ -54,27 +58,48 @@ export class FormController {
             });
         return realmObject;
     }
-
-    public get name(): string {
-        return this._schema.name;
-    }
 }
 
 export class FormControllerCollection {
     private _formControllers: FormController[];
+    private _formTypeCollection: FormTypeCollection;
 
-    constructor() {
+    constructor(formTypeCollection: FormTypeCollection) {
         this._formControllers = [];
+        this._formTypeCollection = formTypeCollection;
     }
 
     public addFormController(formController: FormController): void {
         this._formControllers.push(formController);
     }
 
-    public getFormControllerByName(name: string) {
-        const res = this._formControllers.find(formController => formController.name === name);
+    public getFormControllerFromFormTypeName(formTypeName: string) {
+        const res = this._formControllers.find(
+            formController => formController.formTypeName === formTypeName
+        );
         if (!res) {
-            throw new Error(`FormController with name ${name} not found`);
+            throw new Error(`formController with name ${formTypeName} not found`);
+        } else {
+            return res;
+        }
+    }
+}
+
+export class FormTypeCollection {
+    private _formTypeCollection: FormType[];
+
+    constructor() {
+        this._formTypeCollection = [];
+    }
+
+    public addFormType(formType: FormType): void {
+        this._formTypeCollection.push(formType);
+    }
+
+    public getFormTypeByName(name: string): FormType {
+        const res = this._formTypeCollection.find(formType => formType.name === name);
+        if (!res) {
+            throw new Error(`FormType with name ${name} not found`);
         } else {
             return res;
         }

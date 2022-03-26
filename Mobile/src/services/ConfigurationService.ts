@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 
-interface FormType {
+export interface FormType {
     name: string;
     modelSchema: Realm.ObjectSchema;
     validationSchema: Yup.ObjectSchema;
@@ -12,7 +12,9 @@ export interface IConfiguration {
     partitionValue: string;
     schemas: Realm.ObjectSchema[];
     formTypes: FormType[];
-    boundingBox: [[number, number], [number, number]];
+    offlineMapBoundingBox: [[number, number], [number, number]];
+    mapMarkers: { schema: Realm.ObjectSchema; marker: string; formType?: FormType }[];
+    centerCoordinates: { latitude: number; longitude: number };
 }
 
 export class ConfigurationService {
@@ -24,14 +26,5 @@ export class ConfigurationService {
 
     public get configuration(): IConfiguration {
         return this._configuration;
-    }
-
-    public getFormTypeFromKey(key: string): FormType {
-        const res = this._configuration.formTypes.find(formType => formType.name === key);
-        if (!res) {
-            throw new Error(`Form type with key ${key} not found`);
-        } else {
-            return res;
-        }
     }
 }

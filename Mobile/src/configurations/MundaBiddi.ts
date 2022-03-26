@@ -59,11 +59,24 @@ export const MundaBiddiProblemFormType = {
     }
 };
 
+const mapMarkers = [
+    {
+        schema: MundaBiddiProblemSchema,
+        marker: 'FormSubmissionMarker',
+        formType: MundaBiddiProblemFormType
+    }
+];
+
 export const MundaBiddiConfiguration: IConfiguration = {
     partitionValue: 'mundabiddi',
     schemas: [MundaBiddiProblemSchema, MundaBiddiTrackInfoSchema],
     formTypes: [MundaBiddiProblemFormType],
-    boundingBox: [
+    mapMarkers: mapMarkers,
+    centerCoordinates: {
+        longitude: 116.1683,
+        latitude: -31.9022
+    },
+    offlineMapBoundingBox: [
         [117.87114, -31.72529],
         [114.840035, -34.95242]
     ]
