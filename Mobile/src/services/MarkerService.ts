@@ -13,6 +13,7 @@ export interface MapMarker {
 export interface DisplayableMapMarker extends MapMarker {
     title: string;
     description: string;
+    markerGroupType: string;
 }
 
 const mapMarkerFactory = (

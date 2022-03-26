@@ -6,7 +6,8 @@ import * as ExpoLocation from 'expo-location';
 import { Avatar } from 'react-native-paper';
 import { UserLocation } from 'controllers/UserLocation';
 import { offlineMapDownloader } from 'components/OfflineMap';
-import { DisplayableMapMarker } from 'services/MarkerService';
+import { DisplayableMapMarker, MapMarker } from 'services/MarkerService';
+import { MarkerModal } from 'components/MarkerModal';
 +MapboxGL.setAccessToken(
     'pk.eyJ1IjoibXVycmF5dzEyMyIsImEiOiJja2FhYW1ja24weGxyMnNudjZvcWh0ZnA2In0.HFw1UOLPuKINwj_-nT0dyw'
 );
@@ -43,10 +44,6 @@ const styles = StyleSheet.create({
     }
 });
 
-const formatMapMarker = (marker: DisplayableMapMarker): string => {
-    return `${marker.title}: \n ${marker.description}`;
-};
-
 export const Map = () => {
     const { markerService, mapService, errorObserver, configurationService } =
         useContext(ServicesContext);
@@ -55,6 +52,7 @@ export const Map = () => {
     const mapTrack = mapService.mapTrack;
 
     const [markers, setMarkers] = React.useState(mapMarkers);
+    const [markerModal, setMarkerModalShown] = React.useState<DisplayableMapMarker | null>();
     const [coords, setCoords] = React.useState([
         centerCoordinates.longitude,
         centerCoordinates.latitude
@@ -81,15 +79,22 @@ export const Map = () => {
         const id = m._id.toString();
 
         return (
-            <MapboxGL.PointAnnotation key={id} id={id} coordinate={[m.longitude, m.latitude]}>
+            <MapboxGL.PointAnnotation
+                key={id}
+                id={id}
+                coordinate={[m.longitude, m.latitude]}
+                onSelected={() => setMarkerModalShown(m)}
+            >
                 <View />
-                <MapboxGL.Callout title={formatMapMarker(m)} />
             </MapboxGL.PointAnnotation>
         );
     });
 
     return (
         <View style={styles.page}>
+            {markerModal && (
+                <MarkerModal marker={markerModal} onDeselect={() => setMarkerModalShown(null)} />
+            )}
             <View style={styles.container}>
                 <TouchableOpacity style={styles.gpsTouchable} onPress={setCoordsOnPress}>
                     <Avatar.Icon icon={'crosshairs-gps'} style={styles.gps} size={40} />

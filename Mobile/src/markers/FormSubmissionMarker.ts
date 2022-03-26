@@ -36,6 +36,10 @@ export class FormSubmissionMarker implements DisplayableMapMarker {
         return this._mapMarker.type;
     }
 
+    public get markerGroupType(): string {
+        return 'Reported Problem';
+    }
+
     public get title(): string {
         const markerType = this._formType.formFieldOptions.type.options.find(
             option => option.value === this.type
