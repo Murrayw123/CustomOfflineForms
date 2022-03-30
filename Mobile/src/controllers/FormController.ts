@@ -8,7 +8,7 @@ export interface FormValues {
 
 interface ConvertedFormValues {
     _id: BSON.ObjectId;
-    [key: string]: string | number | BSON.ObjectId;
+    [key: string]: string | number | Date | BSON.ObjectId;
 }
 
 const RESERVED_FIELDS = ['_id', 'org'];
@@ -44,7 +44,8 @@ export class FormController {
 
         const realmObject: ConvertedFormValues = {
             _id: new BSON.ObjectId(),
-            org: partitionValue
+            org: partitionValue,
+            lastUpdated: new Date()
         };
 
         Object.keys(formValues)
@@ -56,6 +57,7 @@ export class FormController {
                     realmObject[key] = formValues[key];
                 }
             });
+
         return realmObject;
     }
 }

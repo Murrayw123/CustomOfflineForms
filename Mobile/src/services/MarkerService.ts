@@ -7,6 +7,7 @@ export interface MapMarker {
     _id: number;
     latitude: number;
     longitude: number;
+    lastUpdated: Date;
     [key: string]: any;
 }
 
@@ -14,6 +15,8 @@ export interface DisplayableMapMarker extends MapMarker {
     title: string;
     description: string;
     markerGroupType: string;
+    lastUpdated: Date;
+    icon: string;
 }
 
 const mapMarkerFactory = (
@@ -24,7 +27,9 @@ const mapMarkerFactory = (
 
     if (mapMarkerConfig.marker === 'FormSubmissionMarker') {
         realmValues.forEach(value => {
-            markers.push(new FormSubmissionMarker(mapMarkerConfig.formType as any, value, ''));
+            markers.push(
+                new FormSubmissionMarker(mapMarkerConfig.formType as any, value, 'alert-circle')
+            );
         });
     }
 

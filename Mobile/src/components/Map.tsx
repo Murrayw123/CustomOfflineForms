@@ -6,14 +6,15 @@ import * as ExpoLocation from 'expo-location';
 import { Avatar } from 'react-native-paper';
 import { UserLocation } from 'controllers/UserLocation';
 import { offlineMapDownloader } from 'components/OfflineMap';
-import { DisplayableMapMarker, MapMarker } from 'services/MarkerService';
+import { DisplayableMapMarker } from 'services/MarkerService';
 import { MarkerModal } from 'components/MarkerModal';
+import { generateMarkers } from 'components/Markers';
+
 +MapboxGL.setAccessToken(
     'pk.eyJ1IjoibXVycmF5dzEyMyIsImEiOiJja2FhYW1ja24weGxyMnNudjZvcWh0ZnA2In0.HFw1UOLPuKINwj_-nT0dyw'
 );
 
 const StyleURL = 'mapbox://styles/murrayw123/ckkdfkpan08m317ogw6ebdoli';
-
 const styles = StyleSheet.create({
     page: {
         flex: 1,
@@ -75,27 +76,13 @@ export const Map = () => {
         setCoords([location.coords.longitude, location.coords.latitude]);
     };
 
-    const pointAnnotations = markers.map(m => {
-        const id = m._id.toString();
-
-        return (
-            <MapboxGL.PointAnnotation
-                key={id}
-                id={id}
-                coordinate={[m.longitude, m.latitude]}
-                onSelected={() => setMarkerModalShown(m)}
-            >
-                <View />
-            </MapboxGL.PointAnnotation>
-        );
-    });
-
     return (
         <View style={styles.page}>
             {markerModal && (
                 <MarkerModal marker={markerModal} onDeselect={() => setMarkerModalShown(null)} />
             )}
             <View style={styles.container}>
+                <Avatar.Icon icon={'crosshairs-gps'} style={styles.gps} size={40} />
                 <TouchableOpacity style={styles.gpsTouchable} onPress={setCoordsOnPress}>
                     <Avatar.Icon icon={'crosshairs-gps'} style={styles.gps} size={40} />
                 </TouchableOpacity>
@@ -114,7 +101,7 @@ export const Map = () => {
                             />
                         </MapboxGL.ShapeSource>
                     )}
-                    {pointAnnotations}
+                    {generateMarkers(markers, setMarkerModalShown)}
                 </MapboxGL.MapView>
             </View>
         </View>

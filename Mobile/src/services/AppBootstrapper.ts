@@ -13,6 +13,7 @@ import {
     FormTypeCollection
 } from 'controllers/FormController';
 import { MarkerService } from 'services/MarkerService';
+import { ToastService } from 'services/ToastService';
 
 export interface Services {
     db: Database;
@@ -22,7 +23,7 @@ export interface Services {
     configurationService: ConfigurationService;
     mapService: MapService;
     markerService: MarkerService;
-    errorObserver: Subject<string>;
+    toastService: ToastService;
     formControllerCollection: FormControllerCollection;
     formTypeCollection: FormTypeCollection;
 }
@@ -40,7 +41,7 @@ export function servicesFactory(configuration: IConfiguration = MundaBiddiConfig
     const realmCollection = new RealmCollection(realmFactory, configurationService);
     const formTypeCollection = new FormTypeCollection();
     const formControllerCollection = new FormControllerCollection(formTypeCollection);
-    const errorObserver = new Subject<string>();
+    const toastService = new ToastService();
     const markerService = new MarkerService(
         realmCollection,
         formTypeCollection,
@@ -54,7 +55,7 @@ export function servicesFactory(configuration: IConfiguration = MundaBiddiConfig
         realmCollection,
         navigationService,
         configurationService,
-        errorObserver,
+        toastService: toastService,
         mapService,
         markerService,
         formControllerCollection,

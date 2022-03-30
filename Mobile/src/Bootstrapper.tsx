@@ -4,6 +4,7 @@ import { Provider as PaperProvider, Text } from 'react-native-paper';
 import { HeaderComponent } from 'components/Header';
 import { NavigationComponent } from 'components/BottomBar';
 import { ServicesContext } from 'services/Context';
+import { ToastComponent } from 'components/ToastComponent';
 
 interface BootstrapperProps {
     appBootstrapper: AppBootstrapper;
@@ -34,6 +35,7 @@ export const Bootstrapper = (props: BootstrapperProps) => {
                     <>
                         <HeaderComponent />
                         <NavigationComponent />
+                        <ToastComponent />
                     </>
                 </ServicesContext.Provider>
             )}

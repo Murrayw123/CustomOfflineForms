@@ -36,6 +36,10 @@ export class FormSubmissionMarker implements DisplayableMapMarker {
         return this._mapMarker.type;
     }
 
+    public get lastUpdated(): Date {
+        return this._mapMarker.lastUpdated;
+    }
+
     public get markerGroupType(): string {
         return 'Reported Problem';
     }

@@ -37,6 +37,10 @@ export const MarkerModal = (props: MarkerModalProps) => {
                 <Text style={{ color: 'black', textAlign: 'center' }}>
                     Description: {props.marker.description}
                 </Text>
+
+                <Text style={{ color: 'black', textAlign: 'center' }}>
+                    Reported On: {props.marker.lastUpdated.toDateString()}
+                </Text>
             </Modal>
         </Portal>
     );

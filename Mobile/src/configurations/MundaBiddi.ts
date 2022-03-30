@@ -6,6 +6,7 @@ export const MundaBiddiProblemSchema = {
     properties: {
         _id: 'objectId?',
         description: 'string',
+        lastUpdated: 'date',
         latitude: 'double',
         longitude: 'double',
         org: 'string',
@@ -43,7 +44,7 @@ export const MundaBiddiProblemFormType = {
         latitude: '0',
         longitude: '0',
         org: 'MundaBiddi Trail Foundation',
-        type: ''
+        type: 'trail_obstruction'
     },
     formFieldOptions: {
         type: {
