@@ -17,11 +17,11 @@ const latLongIsTruthy = (latitude: string, longitude: string) => {
 };
 
 export const LocationWithButton = (props: Props): JSX.Element => {
-    const { errorObserver } = useContext(ServicesContext);
+    const { toastService } = useContext(ServicesContext);
     const [isLoading, setIsLoading] = React.useState(false);
 
     // ExpoLocation doesn't play nice with Jest, keep the construction in the React components
-    const userLocation = new UserLocation(ExpoLocation, errorObserver);
+    const userLocation = new UserLocation(ExpoLocation, toastService);
 
     const getLocation = async () => {
         setIsLoading(true);

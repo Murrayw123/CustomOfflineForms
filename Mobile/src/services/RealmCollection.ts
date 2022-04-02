@@ -1,6 +1,7 @@
-import { ObjectSchema } from 'realm';
+import { ObjectSchema } from 'services/RealmSyncStatusService';
 import { RealmFactory } from 'services/RealmFactory';
 import { ConfigurationService } from 'services/ConfigurationService';
+import { Subject } from 'rxjs';
 
 export interface RealmAsJS {
     [key: string]: Array<{ [key: string]: any }>;
@@ -10,11 +11,13 @@ export class RealmCollection {
     private _realmCollection: Array<{ partition: string; realm: Realm }>;
     private _realmFactory: RealmFactory;
     private _configurationService: ConfigurationService;
+    private _realmsReadySubscribers: Subject<void>;
 
     constructor(realmFactory: RealmFactory, configurationService: ConfigurationService) {
         this._realmFactory = realmFactory;
         this._realmCollection = [];
         this._configurationService = configurationService;
+        this._realmsReadySubscribers = new Subject();
     }
 
     public async addRealm(schemas: Array<ObjectSchema>): Promise<void> {
@@ -62,5 +65,13 @@ export class RealmCollection {
         this._realmCollection.forEach(realm => {
             realm.realm.close();
         });
+    }
+
+    public markRealmsAsReady(): void {
+        this._realmsReadySubscribers.next();
+    }
+
+    public subscribeToRealmReady(callback: () => void): void {
+        this._realmsReadySubscribers.subscribe(callback);
     }
 }

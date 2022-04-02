@@ -1,8 +1,8 @@
 import { LocationObject } from 'expo-location/build/Location.types';
-import { Subject } from 'rxjs';
+import { ToastService } from 'services/ToastService';
 
 export interface ILocationController {
-    requestPermissionsAsync: () => Promise<{ status: string }>;
+    requestForegroundPermissionsAsync: () => Promise<{ status: string }>;
     getCurrentPositionAsync: () => Promise<LocationObject>;
 }
 const emptyCoordinates: LocationObject = {
@@ -20,14 +20,14 @@ const emptyCoordinates: LocationObject = {
 
 export class UserLocation {
     private _locationController: ILocationController;
-    private _errorObservable: Subject<string>;
-    constructor(locationController: ILocationController, errorObservable: Subject<string>) {
+    private _toastService: ToastService;
+    constructor(locationController: ILocationController, toastService: ToastService) {
         this._locationController = locationController;
-        this._errorObservable = errorObservable;
+        this._toastService = toastService;
     }
 
     private async _requestPermission(): Promise<boolean> {
-        const { status } = await this._locationController.requestPermissionsAsync();
+        const { status } = await this._locationController.requestForegroundPermissionsAsync();
         return status === 'granted';
     }
 
@@ -37,8 +37,10 @@ export class UserLocation {
         if (permissionGranted) {
             return this._locationController.getCurrentPositionAsync();
         } else {
-            this._errorObservable.next('Location permission denied');
-            return Promise.resolve(emptyCoordinates);
+            this._toastService.publishErrorToast(
+                'Location permission denied: Please enable location permissions'
+            );
+            return emptyCoordinates;
         }
     }
 }

@@ -1,11 +1,12 @@
 import { LocationObject, LocationPermissionResponse } from 'expo-location/build/Location.types';
 import { ILocationController, UserLocation } from 'controllers/UserLocation';
-import { Subject } from 'rxjs';
+import { ToastService, ToastType } from 'services/ToastService';
 
 describe('LocationService', () => {
+    let toastServiceSubscriber: jest.Mock;
     let requestLocation: jest.Mock;
     let requestPermissionsAsync: jest.Mock;
-    let errorObserver: Subject<string>;
+    let toastService: ToastService;
 
     let subject: UserLocation;
 
@@ -22,12 +23,13 @@ describe('LocationService', () => {
     beforeEach(() => {
         requestLocation = jest.fn();
         requestPermissionsAsync = jest.fn();
-        errorObserver = new Subject();
+        toastService = new ToastService();
+        toastServiceSubscriber = jest.fn();
 
-        errorObserver.next = jest.fn();
+        toastService.subscribe(toastServiceSubscriber as any);
 
         requestPermissionsAsync.mockResolvedValue({ status: 'granted' });
-        subject = new UserLocation(new MockLocation(), errorObserver);
+        subject = new UserLocation(new MockLocation(), toastService);
     });
 
     it('should get the location of the user', () => {
@@ -40,6 +42,9 @@ describe('LocationService', () => {
         const location = await subject.getLocationForComponent();
         expect(location.coords.latitude).toEqual(0);
         expect(location.coords.longitude).toEqual(0);
-        expect(errorObserver.next).toHaveBeenCalled();
+        expect(toastServiceSubscriber).toHaveBeenCalledWith({
+            message: 'Location permission denied',
+            type: ToastType.Error
+        });
     });
 });

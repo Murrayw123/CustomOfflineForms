@@ -1,8 +1,6 @@
 import { Database } from 'services/Db';
 import { RealmCollection } from 'services/RealmCollection';
 import { RealmFactory } from 'services/RealmFactory';
-import { Credentials } from 'realm';
-import { Subject } from 'rxjs';
 import { NavigationService } from 'services/NavigationService';
 import { ConfigurationService, IConfiguration } from 'services/ConfigurationService';
 import { MapService } from 'services/MapService';
@@ -14,6 +12,9 @@ import {
 } from 'controllers/FormController';
 import { MarkerService } from 'services/MarkerService';
 import { ToastService } from 'services/ToastService';
+import { RealmSyncStatusService } from 'services/RealmSyncStatusService';
+import { Credentials } from 'realm';
+import { OfflineMapSyncStatusService } from 'services/OfflineMapSyncStatusService';
 
 export interface Services {
     db: Database;
@@ -26,6 +27,8 @@ export interface Services {
     toastService: ToastService;
     formControllerCollection: FormControllerCollection;
     formTypeCollection: FormTypeCollection;
+    realmSyncStatusService: RealmSyncStatusService;
+    offlineMapSyncStatusService: OfflineMapSyncStatusService;
 }
 
 const defaultRoutes = [
@@ -48,6 +51,11 @@ export function servicesFactory(configuration: IConfiguration = MundaBiddiConfig
         configurationService
     );
     const mapService = new MapService(realmCollection, configurationService, markerService);
+    const realmSyncStatusService = new RealmSyncStatusService(
+        realmCollection,
+        configurationService
+    );
+    const offlineMapSyncStatusService = new OfflineMapSyncStatusService();
 
     return {
         db,
@@ -59,7 +67,9 @@ export function servicesFactory(configuration: IConfiguration = MundaBiddiConfig
         mapService,
         markerService,
         formControllerCollection,
-        formTypeCollection
+        formTypeCollection,
+        realmSyncStatusService,
+        offlineMapSyncStatusService
     };
 }
 
@@ -94,10 +104,13 @@ export class AppBootstrapper {
 
             formControllerCollection.addFormController(formController);
         });
+
+        realmCollection.markRealmsAsReady();
     }
 
     public async cleanUp(): Promise<void> {
         this._services.realmCollection.closeAllRealms();
+        this._services.realmSyncStatusService.destroy();
         return this._services.db.logout();
     }
 

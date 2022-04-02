@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { Appbar } from 'react-native-paper';
-import { Platform } from 'react-native';
-
-const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
+import { TopBarStatusIndicator } from 'components/TopBarStatusIndicator';
 
 export const HeaderComponent = () => (
     <Appbar.Header style={{ padding: 0, margin: 0, height: 40 }}>
@@ -11,6 +9,6 @@ export const HeaderComponent = () => (
             title={'TrailScout'}
             subtitle={'for all your reporting needs'}
         />
-        {/*<Appbar.Action style={{padding: 0, margin: 0}} icon={MORE_ICON} />*/}
+        <TopBarStatusIndicator />
     </Appbar.Header>
 );

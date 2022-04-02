@@ -1,65 +1,43 @@
 import React, { useContext } from 'react';
-import { Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import MapboxGL from '@react-native-mapbox-gl/maps';
 import { ServicesContext } from 'services/Context';
 import * as ExpoLocation from 'expo-location';
-import { Avatar } from 'react-native-paper';
+import { ActivityIndicator, Avatar } from 'react-native-paper';
 import { UserLocation } from 'controllers/UserLocation';
-import { offlineMapDownloader } from 'components/OfflineMap';
+import { hasOfflineMap, offlineMapDownloader } from 'components/OfflineMap';
 import { DisplayableMapMarker } from 'services/MarkerService';
 import { MarkerModal } from 'components/MarkerModal';
 import { generateMarkers } from 'components/Markers';
+import { mapStyles, StyleURL } from 'components/MapStyles';
 
 +MapboxGL.setAccessToken(
     'pk.eyJ1IjoibXVycmF5dzEyMyIsImEiOiJja2FhYW1ja24weGxyMnNudjZvcWh0ZnA2In0.HFw1UOLPuKINwj_-nT0dyw'
 );
 
-const StyleURL = 'mapbox://styles/murrayw123/ckkdfkpan08m317ogw6ebdoli';
-const styles = StyleSheet.create({
-    page: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F5FCFF'
-    },
-    container: {
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height,
-        backgroundColor: 'tomato',
-        position: 'absolute'
-    },
-    map: {
-        flex: 1
-    },
-    gpsTouchable: {
-        position: 'absolute',
-        right: 10,
-        top: 80,
-        zIndex: 9999,
-        width: 50,
-        height: 50
-    },
-    gps: {
-        position: 'absolute',
-        backgroundColor: '#fff'
-    }
-});
-
 export const Map = () => {
-    const { markerService, mapService, errorObserver, configurationService } =
-        useContext(ServicesContext);
+    const {
+        markerService,
+        mapService,
+        toastService,
+        configurationService,
+        offlineMapSyncStatusService
+    } = useContext(ServicesContext);
+
     const { offlineMapBoundingBox, centerCoordinates } = configurationService.configuration;
+    const userLocation = new UserLocation(ExpoLocation, toastService);
+
     const mapMarkers: DisplayableMapMarker[] = [];
     const mapTrack = mapService.mapTrack;
 
     const [markers, setMarkers] = React.useState(mapMarkers);
+    const [syncingCoords, setSyncingCoords] = React.useState(false);
+    const [downloadMapVisible, setDownloadMapVisible] = React.useState(false);
     const [markerModal, setMarkerModalShown] = React.useState<DisplayableMapMarker | null>();
     const [coords, setCoords] = React.useState([
         centerCoordinates.longitude,
         centerCoordinates.latitude
     ]);
-
-    const userLocation = new UserLocation(ExpoLocation, errorObserver);
 
     React.useEffect(() => {
         markerService.subscribeToMapMarkerChanges(markers => {
@@ -68,25 +46,52 @@ export const Map = () => {
     }, [markerService]);
 
     React.useEffect(() => {
-        offlineMapDownloader(offlineMapBoundingBox);
-    }, [mapService]);
+        hasOfflineMap().then(hasOfflineMap => {
+            setDownloadMapVisible(!hasOfflineMap);
+        });
+    }, []);
+
+    offlineMapSyncStatusService.subscribe((syncing: boolean) => {
+        if (syncing) {
+            setDownloadMapVisible(false);
+        }
+    });
+
+    const downloadMap = () => {
+        offlineMapDownloader(offlineMapBoundingBox, offlineMapSyncStatusService.updateSyncStatus);
+    };
 
     const setCoordsOnPress = async () => {
+        setSyncingCoords(true);
         const location = await userLocation.getLocationForComponent();
         setCoords([location.coords.longitude, location.coords.latitude]);
+        setSyncingCoords(false);
     };
 
     return (
-        <View style={styles.page}>
+        <View style={mapStyles.page}>
             {markerModal && (
                 <MarkerModal marker={markerModal} onDeselect={() => setMarkerModalShown(null)} />
             )}
-            <View style={styles.container}>
-                <Avatar.Icon icon={'crosshairs-gps'} style={styles.gps} size={40} />
-                <TouchableOpacity style={styles.gpsTouchable} onPress={setCoordsOnPress}>
-                    <Avatar.Icon icon={'crosshairs-gps'} style={styles.gps} size={40} />
+            <View style={mapStyles.container}>
+                <TouchableOpacity style={mapStyles.gpsTouchable} onPress={setCoordsOnPress}>
+                    {syncingCoords ? (
+                        <ActivityIndicator
+                            animating={true}
+                            style={mapStyles.activity}
+                            size={40}
+                            color={'grey'}
+                        />
+                    ) : (
+                        <Avatar.Icon icon={'crosshairs-gps'} style={mapStyles.gps} size={40} />
+                    )}
                 </TouchableOpacity>
-                <MapboxGL.MapView style={styles.map} styleURL={StyleURL}>
+                {downloadMapVisible && (
+                    <TouchableOpacity style={mapStyles.downloadMap} onPress={downloadMap}>
+                        <Avatar.Icon icon={'cloud-download'} style={mapStyles.gps} size={40} />
+                    </TouchableOpacity>
+                )}
+                <MapboxGL.MapView style={mapStyles.map} styleURL={StyleURL}>
                     <MapboxGL.Camera
                         zoomLevel={12}
                         animationMode={'flyTo'}
