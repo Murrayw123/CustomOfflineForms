@@ -13,7 +13,6 @@ import {
 import { MarkerService } from 'services/MarkerService';
 import { ToastService } from 'services/ToastService';
 import { RealmSyncStatusService } from 'services/RealmSyncStatusService';
-import { Credentials } from 'realm';
 import { OfflineMapSyncStatusService } from 'services/OfflineMapSyncStatusService';
 
 export interface Services {
@@ -32,12 +31,12 @@ export interface Services {
 }
 
 const defaultRoutes = [
-    { key: 'forms', title: 'Forms', icon: 'clipboard' },
+    { key: 'forms', title: 'Trail Report', icon: 'clipboard' },
     { key: 'map', title: 'Map', icon: 'map' }
 ];
 
 export function servicesFactory(configuration: IConfiguration = MundaBiddiConfiguration): Services {
-    const db = new Database('dynamicforms_dev-xezyh', Credentials.anonymous());
+    const db = new Database('dynamicforms_dev-xezyh');
     const configurationService = new ConfigurationService(configuration);
     const realmFactory = new RealmFactory(db, configurationService);
     const navigationService = new NavigationService(defaultRoutes);
@@ -80,7 +79,7 @@ export class AppBootstrapper {
         this._services = factory();
     }
 
-    public async bootstrap(): Promise<void> {
+    public async bootstrap(realmCredentials: Realm.Credentials): Promise<void> {
         const {
             db,
             realmCollection,
@@ -90,7 +89,7 @@ export class AppBootstrapper {
         } = this._services;
 
         const { schemas, formTypes } = configurationService.configuration;
-        await db.login();
+        await db.login(realmCredentials);
         await realmCollection.addRealm(schemas);
 
         formTypes.forEach(formType => {

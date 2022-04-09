@@ -29,8 +29,8 @@ export const MundaBiddiTrackInfoSchema = {
 export const MundaBiddiProblemValidationSchema = Yup.object().shape({
     description: Yup.string().required('Description is required'),
     image: Yup.string(),
-    latitude: Yup.number().required('Latitude is required'),
-    longitude: Yup.number().required('Longitude is required'),
+    latitude: Yup.number().required('Latitude is required').min(-90).max(90).notOneOf([0]),
+    longitude: Yup.number().required('Longitude is required').max(180).min(-180).notOneOf([0]),
     org: Yup.string().required('Org is required'),
     type: Yup.string().required('Type is required')
 });

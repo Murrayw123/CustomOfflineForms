@@ -16,7 +16,7 @@ export const SaveButton = ({ onSave }: Props) => {
                 style={{
                     width: 150,
                     alignSelf: 'flex-end',
-                    marginTop: 10,
+                    marginTop: 15,
                     marginRight: 10
                 }}
             >

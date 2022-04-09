@@ -30,12 +30,19 @@ export const TopBarStatusIndicator = () => {
                 <ActivityIndicator
                     animating={true}
                     style={{ paddingRight: 15, paddingBottom: 15 }}
+                    color={'grey'}
                 />
             ) : (
                 <Avatar.Icon
                     size={45}
                     icon={connectivityIcon}
-                    style={{ backgroundColor: 'transparent', paddingRight: 15, paddingBottom: 15 }}
+                    style={{
+                        backgroundColor: 'transparent',
+                        paddingRight: 15,
+                        paddingBottom: 15,
+                        bottom: 4,
+                        right: 6
+                    }}
                 />
             )}
         </View>

@@ -1,18 +1,16 @@
-import { App, Credentials, User } from 'realm';
+import { App, User } from 'realm';
 
 export class Database {
     private _app: App;
     private _user: User | undefined;
-    private _credentials: Credentials;
 
-    constructor(realmId: string, credentials: Credentials) {
+    constructor(realmId: string) {
         this._app = new App({ id: realmId });
         this._user = undefined;
-        this._credentials = credentials;
     }
 
-    public async login(): Promise<User> {
-        this._user = await this._app.logIn(this._credentials);
+    public async login(realmCredentials: Realm.Credentials): Promise<User> {
+        this._user = await this._app.logIn(realmCredentials);
         return this._user;
     }
 

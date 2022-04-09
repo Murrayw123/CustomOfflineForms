@@ -39,10 +39,6 @@ export class NavigationService {
         return this._routes;
     }
 
-    public get currentPage(): string {
-        return this._currentPage;
-    }
-
     public set currentIndex(index: number) {
         this._currentPage = this._routes[index].key;
         this._onComponentChange.next(index);

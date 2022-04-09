@@ -7,7 +7,7 @@ export const HeaderComponent = () => (
         <Appbar.Content
             style={{ bottom: 13 }}
             title={'TrailScout'}
-            subtitle={'for all your reporting needs'}
+            subtitle={''}
         />
         <TopBarStatusIndicator />
     </Appbar.Header>

@@ -62,25 +62,25 @@ export const LocationWithButton = (props: Props): JSX.Element => {
                 <ActivityIndicator
                     animating={true}
                     color={'grey'}
-                    style={{ marginLeft: 20, top: 4 }}
+                    style={{ marginLeft: 25, top: 4 }}
                 />
             )}
             {!isLoading && latLongIsTruthy(props.latitude, props.longitude) && (
                 <IconButton
                     icon="crosshairs-gps"
-                    color="#fff"
+                    color="grey"
                     size={28}
                     onPress={getLocation}
-                    style={{ marginLeft: 10, top: 7 }}
+                    style={{ marginLeft: 15, top: 7, backgroundColor: '#fff' }}
                 />
             )}
             {!isLoading && !latLongIsTruthy(props.latitude, props.longitude) && (
                 <IconButton
                     icon="crosshairs"
-                    color="#fff"
+                    color="grey"
                     size={28}
                     onPress={getLocation}
-                    style={{ marginLeft: 10, top: 7 }}
+                    style={{ marginLeft: 15, top: 7, backgroundColor: '#fff' }}
                 />
             )}
         </View>
