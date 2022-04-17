@@ -4,7 +4,7 @@ export interface FormType {
     name: string;
     modelSchema: Realm.ObjectSchema;
     validationSchema: Yup.ObjectSchema;
-    initialValues: { [key: string]: string };
+    initialValues: { [key: string]: string | boolean };
     formFieldOptions: { [key: string]: { options: Array<{ display: string; value: string }> } };
 }
 

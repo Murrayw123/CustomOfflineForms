@@ -16,6 +16,7 @@ export class NavigationService {
     private _routes: Route[] = [];
     private _onComponentChange: Subject<number>;
     private _onAvailableRoutesChange: Subject<Route[]>;
+    private _history: string[] = [];
 
     constructor(routes: Route[]) {
         this._routes = routes;
@@ -30,9 +31,22 @@ export class NavigationService {
         this._onAvailableRoutesChange.next(this._routes);
     }
 
-    public popRoute(key: string) {
-        this._routes = this._routes.filter(route => route.key !== key);
-        this._onAvailableRoutesChange.next(this._routes);
+    public goBack(): number {
+        if (this._history.length > 0) {
+            this._history.pop();
+            const previousIndex = this._routes.findIndex(
+                route => route.key === this._history[this._history.length - 1]
+            );
+            if (previousIndex !== -1) {
+                this.currentIndex = previousIndex;
+            } else {
+                this._currentPage = this._routes[0].key;
+                this._onComponentChange.next(0);
+            }
+            return this._history.length;
+        } else {
+            return -1;
+        }
     }
 
     public get routes(): Route[] {
@@ -40,7 +54,12 @@ export class NavigationService {
     }
 
     public set currentIndex(index: number) {
-        this._currentPage = this._routes[index].key;
+        const currentPage = this._routes[index].key;
+        this._currentPage = currentPage;
+        const lastPageInHistory = this._history[this._history.length - 1];
+        if (lastPageInHistory !== currentPage) {
+            this._history.push(currentPage);
+        }
         this._onComponentChange.next(index);
     }
 

@@ -35,4 +35,64 @@ describe('Navigation Service', () => {
             { key: 'settings', title: 'Settings', icon: 'settings' }
         ]);
     });
+
+    it('should pop routes from the stack when the back button is pressed', () => {
+        // add a route because why not
+        subject.addRoute({ key: 'settings', title: 'Settings', icon: 'settings' });
+        const currentIndex = subject.currentIndex;
+        subject.currentIndex = 2;
+
+        expect(subject.currentIndex).toBe(2);
+
+        subject.goBack();
+        expect(subject.currentIndex).toBe(currentIndex);
+    });
+
+    it('should pop routes from the stack when the back button is pressed case 2', () => {
+        subject = new NavigationService([
+            { key: 'forms', title: 'Forms', icon: 'form' },
+            { key: 'map', title: 'Map', icon: 'map' }
+        ]);
+
+        subject.currentIndex = 1;
+        subject.goBack();
+        expect(subject.currentIndex).toBe(0);
+    });
+
+    it('should pop routes from the stack when the back button is pressed case 3', () => {
+        subject = new NavigationService([
+            { key: 'forms', title: 'Forms', icon: 'form' },
+            { key: 'map', title: 'Map', icon: 'map' }
+        ]);
+
+        subject.currentIndex = 1;
+        subject.goBack();
+        const currentIndex = subject.goBack();
+        expect(currentIndex).toBe(-1);
+    });
+
+    it('should pop routes from the stack when the back button is pressed case 4', () => {
+        subject.addRoute({ key: 'settings', title: 'Settings', icon: 'settings' });
+
+        subject.currentIndex = 0;
+        subject.currentIndex = 1;
+        subject.currentIndex = 2;
+        subject.currentIndex = 0;
+
+        subject.goBack();
+        subject.goBack();
+        subject.goBack();
+        subject.goBack();
+
+        expect(subject.currentIndex).toBe(0);
+    });
+
+    it('should push the same history object twice', () => {
+        subject.addRoute({ key: 'settings', title: 'Settings', icon: 'settings' });
+        const currentIndex = subject.currentIndex;
+        subject.currentIndex = 2;
+        subject.currentIndex = 2;
+        subject.goBack();
+        expect(subject.currentIndex).toBe(currentIndex);
+    });
 });

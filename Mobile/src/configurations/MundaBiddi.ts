@@ -10,7 +10,8 @@ export const MundaBiddiProblemSchema = {
         latitude: 'double',
         longitude: 'double',
         org: 'string',
-        type: 'string'
+        type: 'string',
+        resolved: 'bool'
     },
     primaryKey: '_id'
 };
@@ -32,7 +33,8 @@ export const MundaBiddiProblemValidationSchema = Yup.object().shape({
     latitude: Yup.number().required('Latitude is required').min(-90).max(90).notOneOf([0]),
     longitude: Yup.number().required('Longitude is required').max(180).min(-180).notOneOf([0]),
     org: Yup.string().required('Org is required'),
-    type: Yup.string().required('Type is required')
+    type: Yup.string().required('Type is required'),
+    resolved: Yup.boolean().required('Resolved is required')
 });
 
 export const MundaBiddiProblemFormType = {
@@ -44,7 +46,8 @@ export const MundaBiddiProblemFormType = {
         latitude: '0',
         longitude: '0',
         org: 'MundaBiddi Trail Foundation',
-        type: 'trail_obstruction'
+        type: 'trail_obstruction',
+        resolved: false
     },
     formFieldOptions: {
         type: {

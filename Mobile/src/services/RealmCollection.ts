@@ -1,10 +1,15 @@
-import { ObjectSchema } from 'services/RealmSyncStatusService';
 import { RealmFactory } from 'services/RealmFactory';
 import { ConfigurationService } from 'services/ConfigurationService';
 import { Subject } from 'rxjs';
+import { ObjectSchema } from 'realm';
 
-export interface RealmAsJS {
-    [key: string]: Array<{ [key: string]: any }>;
+export interface RealmRow {
+    _id: string;
+    [key: string]: string | number | boolean;
+}
+
+export interface RealmAsJSValues {
+    [key: string]: Array<RealmRow>;
 }
 
 export class RealmCollection {
@@ -36,8 +41,8 @@ export class RealmCollection {
         }
     }
 
-    public getRealmObjectsAsJS(): RealmAsJS {
-        const realmObjectsAsJS: RealmAsJS = {};
+    public getRealmObjectsAsJS(): RealmAsJSValues {
+        const realmObjectsAsJS = {} as RealmAsJSValues;
 
         this._configurationService.configuration.schemas.forEach(schema => {
             realmObjectsAsJS[schema.name] = this.getRealm()
@@ -48,7 +53,7 @@ export class RealmCollection {
         return realmObjectsAsJS;
     }
 
-    public subscribeToRealmChanges(callback: (realmObjectsAsJS: RealmAsJS) => void): void {
+    public subscribeToRealmChanges(callback: (realmObjectsAsJS: RealmAsJSValues) => void): void {
         this._configurationService.configuration.schemas.forEach(schema => {
             this.getRealm()
                 .objects(schema.name)

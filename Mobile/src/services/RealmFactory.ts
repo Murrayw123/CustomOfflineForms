@@ -1,6 +1,7 @@
 import { Database } from 'services/Db';
 import { ConfigurationService } from 'services/ConfigurationService';
 import { ObjectSchema, OpenRealmBehaviorType } from 'realm';
+import Realm from 'realm';
 
 const realmFileBehavior = {
     type: 'downloadBeforeOpen' as OpenRealmBehaviorType

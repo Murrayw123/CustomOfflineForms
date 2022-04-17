@@ -4,10 +4,10 @@ import { ActivityIndicator, Provider as PaperProvider } from 'react-native-paper
 import { HeaderComponent } from 'components/Header';
 import { NavigationComponent } from 'components/BottomBar';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { BackHandler } from 'react-native';
 
 import { ServicesContext } from 'services/Context';
 import { ToastComponent } from 'components/ToastComponent';
-import { View } from 'react-native';
 
 GoogleSignin.configure({
     webClientId: '994703068522-9qjspuml0tqvviaj76vbg2ru1dohdkrv.apps.googleusercontent.com'
@@ -65,8 +65,19 @@ export const Bootstrapper = (props: BootstrapperProps) => {
         }
     };
 
+    const addEventListeners = () => {
+        BackHandler.addEventListener('hardwareBackPress', () => {
+            const currentHistory = appBootstrapper.services.navigationService.goBack();
+            if (currentHistory === -1) {
+                BackHandler.exitApp();
+            }
+            return true;
+        });
+    };
+
     useEffect(() => {
         bootstrap();
+        addEventListeners();
         return () => {
             appBootstrapper.cleanUp();
         };

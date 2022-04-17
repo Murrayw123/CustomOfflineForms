@@ -57,4 +57,8 @@ export class FormSubmissionMarker implements DisplayableMapMarker {
     public get description(): string {
         return this._mapMarker.description;
     }
+
+    public get resolved(): boolean {
+        return this._mapMarker.resolved;
+    }
 }

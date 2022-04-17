@@ -1,8 +1,21 @@
+const { defaults: tsjPreset } = require('ts-jest/presets');
+
 module.exports = {
-    preset: 'ts-jest',
-    testEnvironment: 'node',
-    transformIgnorePatterns: [
-        'node_modules/(?!(jest-)?react-native|react-clone-referenced-element|@react-native-community|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|@sentry/.*)'
-    ],
-    moduleDirectories: ['node_modules', './src']
+    preset: 'react-native',
+    globals: {
+        'ts-jest': {
+            tsconfig: 'tsconfig.spec.json'
+        }
+    },
+    transform: {
+        '^.+\\.js$': 'babel-jest',
+        '^.+\\.jsx$': 'babel-jest',
+        '^.+\\.ts?$': 'ts-jest',
+        '^.+\\.tsx?$': 'ts-jest'
+    },
+    globalSetup: './jest.setup.js',
+    moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+    moduleDirectories: ['node_modules', 'src'],
+    testPathIgnorePatterns: ['\\.snap$', '<rootDir>/node_modules/'],
+    testRegex: '(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$'
 };

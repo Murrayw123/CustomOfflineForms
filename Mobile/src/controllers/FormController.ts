@@ -1,14 +1,14 @@
 import { BSON } from 'realm';
-import { RealmCollection } from 'services/RealmCollection';
 import { ConfigurationService, FormType } from 'services/ConfigurationService';
+import { RealmCollection, RealmRow } from 'services/RealmCollection';
 
 export interface FormValues {
-    [key: string]: string;
+    [key: string]: string | number | Date | BSON.ObjectId | boolean;
 }
 
 interface ConvertedFormValues {
     _id: BSON.ObjectId;
-    [key: string]: string | number | Date | BSON.ObjectId;
+    [key: string]: string | number | Date | BSON.ObjectId | boolean;
 }
 
 const RESERVED_FIELDS = ['_id', 'org'];
@@ -39,6 +39,18 @@ export class FormController {
         });
     }
 
+    updateFormSubmission(form: RealmRow): void {
+        const realm = this._realmCollection.getRealm();
+        const formToUpdate = realm.objectForPrimaryKey(this._formType.name, form._id) as RealmRow;
+        realm.write(() => {
+            Object.keys(form).forEach(key => {
+                if (!RESERVED_FIELDS.includes(key)) {
+                    formToUpdate[key] = form[key];
+                }
+            });
+        });
+    }
+
     private _parseFormValues(formValues: FormValues): ConvertedFormValues {
         const partitionValue = this._configurationService.configuration.partitionValue;
 
@@ -52,7 +64,7 @@ export class FormController {
             .filter(key => !RESERVED_FIELDS.includes(key))
             .forEach((key: string) => {
                 if (this._formType.modelSchema.properties[key] === 'double') {
-                    realmObject[key] = parseFloat(formValues[key]);
+                    realmObject[key] = parseFloat(<string>formValues[key]);
                 } else {
                     realmObject[key] = formValues[key];
                 }

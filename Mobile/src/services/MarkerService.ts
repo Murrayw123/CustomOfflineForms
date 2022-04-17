@@ -1,4 +1,4 @@
-import { RealmAsJS, RealmCollection } from 'services/RealmCollection';
+import { RealmAsJSValues, RealmCollection } from 'services/RealmCollection';
 import { FormTypeCollection } from 'controllers/FormController';
 import { ConfigurationService, FormType } from 'services/ConfigurationService';
 import { FormSubmissionMarker } from 'markers/FormSubmissionMarker';
@@ -57,11 +57,14 @@ export class MarkerService {
         });
     }
 
-    private _getMapMarkersFromRealm(realmAsJS: RealmAsJS): DisplayableMapMarker[] {
+    private _getMapMarkersFromRealm(realmAsJS: RealmAsJSValues): DisplayableMapMarker[] {
         const mapMarkers: DisplayableMapMarker[][] = [];
         this._configurationService.configuration.mapMarkers.forEach(mapMarker => {
             mapMarkers.push(
-                mapMarkerFactory(realmAsJS[mapMarker.schema.name] as MapMarker[], mapMarker)
+                mapMarkerFactory(
+                    realmAsJS[mapMarker.schema.name] as unknown as MapMarker[],
+                    mapMarker
+                )
             );
         });
         return mapMarkers.flat();
