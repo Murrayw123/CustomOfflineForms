@@ -6,7 +6,7 @@ module.exports = function (api) {
             'module-resolver',
             {
                 extensions: ['.tsx', 'json', '.ts'],
-                root: ['./src', './node_modules']
+                root: ['./src']
             }
         ]
     ];
