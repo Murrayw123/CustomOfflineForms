@@ -1,14 +1,24 @@
 {
-    "expo": {
-        "name": "TrailScout",
-        "slug": "TrailScout",
-        "version": "1.0.0",
-        "entryPoint": "./index.tsx",
-        "sdkVersion": "44.0.0",
-        "platforms": ["ios", "android", "web"],
-        "plugins": ["@react-native-mapbox-gl/maps", "@react-native-google-signin/google-signin"],
-        "android": {
-            "package": "com.dynamicforms"
-        }
+  "expo": {
+    "name": "TrailScout",
+    "slug": "TrailScout",
+    "version": "1.0.0",
+    "entryPoint": "./index.tsx",
+    "sdkVersion": "44.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "plugins": [
+      "@react-native-mapbox-gl/maps",
+      "@react-native-google-signin/google-signin"
+    ],
+    "android": {
+      "package": "com.dynamicforms"
+    },
+    "ios": {
+      "bundleIdentifier": "com.dynamicforms"
     }
+  }
 }

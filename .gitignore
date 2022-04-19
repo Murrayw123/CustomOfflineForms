@@ -30,7 +30,6 @@ Mobile/build/
 local.properties
 *.iml
 *.hprof
-Mobile/android
 
 # node.js
 #
